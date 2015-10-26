@@ -1,0 +1,77 @@
+<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+      <!-- Sidebar user panel -->
+      <div class="user-panel">
+        <div class="pull-left image">
+          <img src="<%- (!user.regno) ? '/profile-pic' : 'https://academics.vit.ac.in/student/view_photo_2.asp?rgno='+user.regno %>" class="img-circle" alt="User Image">
+        </div>
+        <div class="pull-left info">
+          <p><%= user.full_name %></p>
+          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+        </div>
+      </div>
+      <!-- sidebar menu: : style can be found in sidebar.less -->
+      <ul class="sidebar-menu">
+        <li class="header">MAIN NAVIGATION</li>
+        
+        <!--Single navigation menu-->
+        
+        <li <%= active=='dashboard'?"class=active":'' %>>
+          <a href="/">
+            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+          </a>
+        </li>
+        
+        
+        <li <%= active=='profile'?'class=active':'' %>>
+          <a href="/profile">
+            <i class="fa fa-user"></i> <span>Profile</span>
+          </a>
+        </li>
+
+        <li class="treeview <%= active=='code'?'active':'' %>">
+          <a href="#">
+            <i class="fa fa-code"></i>
+            <span>Code</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li <%= active_sub=='new-code'?'class=active':'' %>>
+              <a href="/newcode"><i class="fa fa-circle-o"></i> + <strong>New Code</strong></a>
+            </li>
+            <li <%= active_sub=='my-codes'?'class=active':'' %>>
+              <a href="/codes"><i class="fa fa-circle-o"></i><strong>My Codes</strong></a>
+            </li>
+          </ul>
+        </li>
+        
+        <li class="treeview <%= active=='mailbox'?'active':'' %>">
+          <a href="#">
+            <i class="fa fa-envelope"></i>
+            <span>Mailbox</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li <%= active_sub=='compose'?'class=active':'' %>><a href="/compose"><i class="fa fa-circle-o"></i> + <strong>Compose</strong></a></li>
+            <% folders.forEach(function(folder){ %>
+              <li <%= active_sub==folder?'class=active':'' %>><a href="/mailbox?folder=<%- folder %>"><i class="fa fa-<%- getFolderIcon(folder) %>"></i> <%= folder.capitalize() %></a></li>
+            <% }) %>
+          </ul>
+        </li>
+        
+        <li <%= active=='freinds'?'class=active':'' %>>
+          <a href="/friends">
+            <i class="fa ion-person-stalker"></i> <span>Friends</span>
+          </a>
+        </li>
+        
+        <li <%= active=='members'?'class=active':'' %>>
+          <a href="/search?tab=members">
+            <i class="fa fa-users"></i> <span>Members</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+    <!-- /.sidebar -->
+  </aside>

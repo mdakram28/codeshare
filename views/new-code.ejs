@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<%- include('components/header',{title:'CODEShare - Create new code',includes:['selectize']}) %>
+<style>
+  #editor{
+    width: 100%;
+    min-height: 200px;
+  }
+</style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini" ng-app="mailApp" ng-controller="mailController" ng-cloak>
+<div class="wrapper">
+  <%- include('components/navbar') %>
+  
+  <%- include('components/sidebar',{active:'code',active_sub:'new-code'}) %>
+  
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        New CODE
+        <small>Fill out the details</small>
+        <div class"pull-right" style="float:right;width:50%">
+          <div class="input-group input-group-sm">
+            <input type="text" class="form-control" value="{{codeBase}}/{{username}}/{{url || getUrl(title)}}">
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-info btn-flat">Copy</button>
+            </span>
+          </div>
+        </div>
+      </h1>
+    </section>
+
+    <section class="content">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="box">
+            <div class="box-header with-border">Code</div>
+            <div class="box-body">
+              <div id="editor">function foo(items) {
+  var x = "All this is syntax highlighted";
+  return x;
+}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="box">
+            <div class="box-header with-border">Settings</div>
+            <div class="box-body">
+              <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <button ng-click="defaults()" class="btn btn-block btn-danger">Defaults</button>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <button ng-click="save()" class="btn btn-block btn-success">Save Code</button>
+                </div>
+              </div>
+              <br>
+              <input class="form-control input-lg" name="title" type="text" ng-model="title" placeholder="Title">
+              <br>
+              <input class="form-control" type="text" ng-model="url" placeholder="url-title : {{getUrl(title)}}">
+              <br>
+              <textarea class="form-control" ng-model="description" type="text" placeholder="description"></textarea>
+              <br>Language : <br>
+              <select id="select-language" ng-model="language" class="demo-default" placeholder="Select language">
+                <% languages.forEach(function(lang){ %>
+                <option value='<%- lang %>' <%- lang=='python' ? 'selected':'' %>><%= lang.capitalize() %></option>
+                <% }) %>
+              </select>
+              <br>Visibility  : <br>
+              <select id="select-visibility" ng-model="visibility" class="demo-default" placeholder="Select visibility">
+                <option value="pb">Public</option>
+                <option value="ff">Friends of Freinds</option>
+                <option value="fr">Friends</option>
+                <option value="pt">Private</option>
+              </select>
+            </div>
+            <div class="overlay hidden" id="refreshing-icon">
+              <i class="fa fa-refresh fa-spin"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="modal modal-success" id="codeUrlModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          Code successfull created , you can access your code by the following url
+          <div class="input-group input-group-sm">
+            <input type="text" class="form-control" value="{{codeBase}}/{{username}}/{{url || getUrl(title)}}">
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-info btn-flat">Copy</button>
+            </span>
+          </div>
+        </div>
+        <div class="modal-footer ">
+          <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+          <a href="{{codeBase}}/{{username}}/{{url || getUrl(title)}}" class="btn btn-outline pull-right">Goto Code</a>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>
+  
+  <%- include('components/footer') %>
+  
+</div>
+
+<%- include('components/footer-scripts',{includes:['slimscroll','fastclick','app','demo','script-mails','ace','selectize','script-codes']}) %> 
+<script type="text/javascript">
+var editor = ace.edit("editor");
+editor.setTheme("ace/theme/monokai");
+editor.getSession().setMode("ace/mode/python");
+editor.setOption("maxLines", 100);
+editor.setOption("minLines", 26);
+
+$('#select-language').selectize();
+$('#select-visibility').selectize();
+  app.controller('mailController2',function($scope,$http,$httpParamSerializerJQLike){
+    $scope.username="<%- user.username %>";
+    $scope.codeBase = "http://localhost:8080/code";
+    $scope.save = function(){
+      $('#refreshing-icon').removeClass('hidden');
+      var formdata = {
+        title:$scope.title,
+        url: ($scope.url=='' || !$scope.url)?$scope.getUrl($scope.title):$scope.url,
+        description:$scope.description || '',
+        language:$scope.language,
+        visibility:$scope.visibility,
+        content:editor.getValue()
+      };
+
+      $http({
+          method  : 'POST',
+          url     : '/api/addCode',
+          data    : $httpParamSerializerJQLike(formdata), //forms user object
+          headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+         })
+      .success(function(data) {
+        if(data.success){
+          $('#codeUrlModal').modal('show');
+        }else{
+          if(data.message=='' || data.message==undefined){
+            $.notify("Unable to save code", "error");
+          }else{
+            $.notify(data.message, "error");
+          }
+        }
+        $('#refreshing-icon').addClass('hidden');
+      })
+      .error(function(data){
+        $.notify("Unable to save code", "error");
+        $('#refreshing-icon').addClass('hidden');
+      });
+    };
+    $scope.defaults = function(){
+      $scope.language = 'python';
+      $scope.visibility = 'pb';
+      $scope.title = "My first code";
+      //a1.updateOriginalInput();
+    };
+    $scope.defaults();
+    $scope.getUrl = function(title){
+      var w = title.split(" ");
+      var ret="";
+      w.forEach(function(word){
+        ret+=word[0].toUpperCase() +  word.substring(1);
+      });
+      return ret;
+    }
+  });
+</script>
+</body>
+</html>

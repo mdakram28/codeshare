@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%- include('components/header',{title:'Compose New Mail',includes:['wysihtml5','icheck','fullcalendar','selectize']}) %>
+</head>
+<body class="hold-transition skin-blue sidebar-mini" ng-app="mailApp" ng-controller="mailController" ng-cloak>
+<div class="wrapper">
+ 
+
+  <%- include('components/navbar') %>
+  
+  <%- include('components/sidebar',{active:'mailbox',active_sub:'compose'}) %>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Compose
+        <small> New messages</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Mailbox</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <div class="col-md-3"><%- include('components/mailbox/folders') %></div>
+        <!-- /.col -->
+        <div class="col-md-9">
+          <div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title">Compose New Message</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body" id="mailbox">
+              <div class="form-group">
+                <!-- <input class="form-control" placeholder="To:" name="to" value="<%- to %>"> -->
+
+                <!-- <input type="text" id="input-tags" class="demo-default" name="to" placeholder="To:" > -->
+                <select id="to-usernames" name="to" placeholder="To:" ></select>
+
+              </div>
+              <div class="form-group">
+                <input class="form-control" placeholder="Subject:" name="subject" value="<%- modelMail.subject %>">
+              </div>
+              <div class="form-group">
+                    <textarea id="compose-textarea" class="form-control" style="height: 300px" name="content">
+                      <%- modelMail.content %>
+                    </textarea>
+              </div>
+              <div class="form-group">
+                <div class="btn btn-default btn-file">
+                  <i class="fa fa-paperclip"></i> Attachment
+                  <input type="file" name="attachment" multiple>
+                </div>
+                <p class="help-block">Max. 32MB</p>
+              </div>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+              <div class="pull-right">
+                <button type="button" class="btn btn-default" ng-click="saveToDraft()"><i class="fa fa-pencil"></i> Draft</button>
+                <button type="submit" class="btn btn-primary" ng-click="submitMail()"><i class="fa fa-envelope-o"></i> Send</button>
+              </div>
+              <button type="reset" class="btn btn-default" ng-click="discardMail()"><i class="fa fa-times"></i> Discard</button>
+            </div>
+            <!-- /.box-footer -->
+            <div class="overlay hidden" id="sending-email-icon">
+              <i class="fa fa-refresh fa-spin"></i>
+            </div>
+          </div>
+          <!-- /. box -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </section>
+    <!-- /.content -->
+    
+  
+  </div>
+  <%- include('components/footer') %>
+  
+  <div class="modal modal-danger" id="confirmationModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4 class="modal-title">Are you sure to delete the modal</h4>
+        </div>
+        <div class="modal-body">
+          <p>The mail will not be saved in draft and will be deleted permanently</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Keep it</button>
+          <button type="button" class="btn btn-outline" ng-click="discardMailConfirmed()" data-dismiss="modal">Discard Mail</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>
+</div>
+
+<%- include('components/footer-scripts',{includes:['slimscroll','fastclick','app','demo','icheck','wysihtml5','script-mails','selectize']}); %>
+<script>
+var default_to = <%- JSON.stringify(req.query.to) %>;
+  $(function () {
+    //Add text editor
+    $("#compose-textarea").wysihtml5();
+  });
+  
+  app.controller('mailController2',function($scope,$http,$httpParamSerializerJQLike){
+    var select = $('#to-usernames').selectize({
+      maxItems: null,
+      valueField: 'username',
+      labelField: 'username',
+      searchField: 'username',
+      options: <%- JSON.stringify(friends) %>,
+      create: true
+    });
+    var selectize = select[0].selectize;
+    default_to.forEach(function(dto){
+      selectize.createItem(dto);
+    });
+    
+      selectize.setValue(default_to);
+    $scope.saveToDraft = function(){};
+    $scope.submitMail = function(){
+      $('#sending-email-icon').removeClass('hidden');
+      var formdata = {
+        to:$('#to-usernames').val(),
+        subject:$("#mailbox input[name='subject']").val(),
+        content:$("#compose-textarea").val(),
+      }
+      $http({
+          method  : 'POST',
+          url     : '/api/sendmail',
+          data    : $httpParamSerializerJQLike(formdata), //forms user object
+          headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+         })
+          .success(function(data) {
+            console.log(data);
+            if(data.success){
+              $.notify("Message sent successfully");
+            }else{
+              $.notify("Unable to send mail . Please check for receiver username", "error");
+            }
+            $('#sending-email-icon').addClass('hidden');
+          })
+          .error(function(data){
+            $.notify("Unable to send mail . Please check for receiver username", "error");
+            $('#sending-email-icon').addClass('hidden');
+          });
+    };
+    $scope.discardMail = function(){
+      $('#confirmationModal').modal('show');
+    };
+    $scope.discardMailConfirmed = discardMailConfirmed;
+    $scope.saveToDraft = function(){
+      $('#sending-email-icon').removeClass('hidden');
+      var formdata = {
+        subject:$("#mailbox input[name='subject']").val(),
+        content:$("#compose-textarea").val(),
+        folder:'draft'
+      }
+      $http({
+          method  : 'POST',
+          url     : '/api/sendmail',
+          data    : $httpParamSerializerJQLike(formdata), //forms user object
+          headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+         })
+          .success(function(data) {
+            if(data.success){
+              $.notify("Message saved to draft");
+            }else{
+              $.notify("Unable to save to draft", "error");
+            }
+            refresh();
+            $('#sending-email-icon').addClass('hidden');
+          })
+          .error(function(data){
+            $.notify("Unable to save to draft", "error");
+            refresh();
+            $('#sending-email-icon').addClass('hidden');
+          });
+    }
+  });
+  
+  function discardMailConfirmed(){
+    $("#mailbox input[name='to']").val('');
+    $("#mailbox input[name='subject']").val('');
+    $('#compose-textarea').data("wysihtml5").editor.setValue('new content');
+  }
+</script>
+</body>
+</html>

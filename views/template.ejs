@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<%- include('components/header',{title:'Home Page',includes:[]}) %>
+</head>
+<body class="hold-transition skin-blue sidebar-mini" ng-app="mailApp" ng-controller="mailController" ng-cloak>
+<div class="wrapper">
+  <%- include('components/navbar') %>
+  
+  <%- include('components/sidebar',{active:'dashboard',active_sub:''}) %>
+  
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Dashboard
+        <small>Notifications</small>
+      </h1>
+    </section>
+
+    <section class="content">
+      <div class="row">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-green"><i class="fa fa-thumbs-o-up"></i></span>
+
+            <div class="info-box-content">
+              <span class="info-box-text">Likes</span>
+              <span class="info-box-number">41,410</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-aqua"><i class="fa fa-envelope-o"></i></span>
+
+            <div class="info-box-content">
+              <span class="info-box-text">Messages</span>
+              <span class="info-box-number">1,410</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-red"><i class="fa fa-star-o"></i></span>
+
+            <div class="info-box-content">
+              <span class="info-box-text">Likes</span>
+              <span class="info-box-number">93,139</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-yellow"><i class="fa fa-comments-o"></i></span>
+
+            <div class="info-box-content">
+              <span class="info-box-text">Comments</span>
+              <span class="info-box-number">93,139</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <%- include('components/mailbox/folders',{btn:'Compose new mail',href:'/compose'}) %>
+      </div>
+    </section>
+
+  </div>
+  
+  <%- include('components/footer') %>
+  
+</div>
+
+<%- include('components/footer-scripts',{includes:['slimscroll','fastclick','app','demo','script-mails']}) %> 
+<script type="text/javascript">
+  app.controller('mailController2',function($scope,$http){
+    
+  });
+</script>
+</body>
+</html>

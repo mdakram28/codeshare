@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+<%- include('components/header',{title:'Search results',includes:[]}) %>
+
+</head>
+<% if(!req.isAuthenticated()){ %>
+  <body class="skin-blue layout-top-nav" ng-app="mailApp" ng-controller="mailController" ng-cloak>
+  <div class="wrapper">
+    <%- include('components/navbar-anonymous') %>
+<% }else{ %>
+  <body class="hold-transition skin-blue sidebar-mini" ng-app="mailApp" ng-controller="mailController" ng-cloak>
+  <div class="wrapper">
+  <%- include('components/navbar') %>
+  <%- include('components/sidebar',{active:'',active_sub:''}) %>
+<% } %>
+  
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Codes
+        <small>Universal codes lister</small>
+      </h1>
+    </section>
+
+    <section class="content row">
+      <div class="col-md-10">
+        <div class="box">
+          <div class="box-header with-border">Codes</div>
+          <%- include('./components/code/codesList') %>
+        </div>
+      </div>
+    </section>
+
+  </div>
+  
+  <%- include('components/footer') %>
+  
+</div>
+<%- include('components/footer-scripts',{includes:['slimscroll','fastclick','app','demo','script-mails']}) %> 
+<% if(req.isAuthenticated()){ %>
+<script type="text/javascript">
+    app.controller('mailController2',function($scope,$http){
+    }
+</script>
+<% }else{%>
+<script type="text/javascript">
+  var app = angular.module('mailApp',[]);
+  app.controller('mailController',function($scope,$http){
+  }
+</script>
+<% } %>
+</body>
+</html>

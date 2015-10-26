@@ -1,0 +1,135 @@
+<header class="main-header">
+    <!-- Logo -->
+    <a href="/" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini"><b>M</b>AP</span>
+      <!-- logo for regular state and mobile devices -->
+      <span class="logo-lg"><b>Mail</b>App</span>
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top" role="navigation">
+      <!-- Sidebar toggle button-->
+      <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+
+      <form class="navbar-form navbar-left" role="search" action="/search" method="get">
+        <div class="input-group form-group">
+          <input type="text" value="<%- req.query.q %>" class="form-control" id="navbar-search-input" style="width:500px" name="q" placeholder="Search">
+            <span class="input-group-btn">
+              <button type="submit" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+              </button>
+            </span>
+        </div>
+      </form>
+      
+      <form class="navbar-form navbar-left" role="search" action="/domainSuggestion" method="post">
+        <div class="input-group form-group">
+          <input type="text" class="form-control" id="navbar-search-input" style="width:200px" name="sug" placeholder="Suggest a website name">
+            <span class="input-group-btn">
+              <button type="submit" id="search-btn" class="btn btn-flat"><i class="fa fa-globe"></i>
+              </button>
+            </span>
+            <input type="hidden" value="<%- req.originalUrl %>" name="redirect">
+        </div>
+      </form>
+
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+          <!-- Messages: style can be found in dropdown.less-->
+          <li class="dropdown messages-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-envelope-o"></i>
+              <span class="label label-success" ng-if="folders.inbox > 0">{{folders.inbox}}</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="header">You have {{folders.inbox}} new messages</li>
+              <li>
+                <!-- inner menu: contains the actual data -->
+                <ul class="menu">
+                  
+                  <li ng-repeat="mail in mails"><!-- start message -->
+                    <a href="/mail?id={{mail._mail._id}}">
+                      <div class="pull-left">
+                        <img src="/profile-pic?user={{mail._sender.username}}" class="img-circle" alt="User Image">
+                      </div>
+                      <h4>
+                        {{mail._sender.full_name}}
+                        <small><i class="fa fa-clock-o"></i> {{mail.diffDate}}</small>
+                      </h4>
+                      <p>{{mail._mail.content}}</p>
+                    </a>
+                  </li>
+                  <!-- end message -->
+                </ul>
+              </li>
+              <li class="footer"><a href="/mailbox?folder=inbox">See All Messages</a></li>
+            </ul>
+          </li>
+          <!-- Notifications: style can be found in dropdown.less -->
+          <li class="dropdown notifications-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" ng-click="readNotifications()">
+              <i class="fa fa-bell-o"></i>
+              <span class="label label-warning" ng-if="notifs_unread > 0">{{notifs_unread}}</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="header">You have <%= notifs_unread %> notifications</li>
+              <li>
+                <!-- inner menu: contains the actual data -->
+                <ul class="menu">
+                  <%- include('./navbar/notification') %>
+                </ul>
+              </li>
+              <li class="footer"><a href="#">View all</a></li>
+            </ul>
+          </li>
+          <!-- User Account: style can be found in dropdown.less -->
+          <li class="dropdown user user-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <img src="<%- (!user.regno) ? '/profile-pic' : 'https://academics.vit.ac.in/student/view_photo_2.asp?rgno='+user.regno %>" class="user-image" alt="User Image">
+              <span class="hidden-xs"><%= user.full_name %></span>
+            </a>
+            <ul class="dropdown-menu">
+              <!-- User image -->
+              <li class="user-header">
+                <img src="<%- (!user.regno) ? '/profile-pic' : 'https://academics.vit.ac.in/student/view_photo_2.asp?rgno='+user.regno %>" class="img-circle" alt="User Image">
+                <p>
+                  <%= user.full_name %>
+                  <small>Member since <%= dateFormat(user.date_joined,'mmmm dS, yyyy') %></small>
+                </p>
+              </li>
+              <!-- Menu Body -->
+              <li class="user-body">
+                <div class="row">
+                  <div class="col-xs-4 text-center">
+                    <a href="/users/<%- encodeURIComponent(user.username) %>/followers">Followers</a>
+                  </div>
+                  <div class="col-xs-4 text-center">
+                    <a href="/users/<%- encodeURIComponent(user.username) %>/following">Sales</a>
+                  </div>
+                  <div class="col-xs-4 text-center">
+                    <a href="/friends">Friends</a>
+                  </div>
+                </div>
+                <!-- /.row -->
+              </li>
+              <!-- Menu Footer-->
+              <li class="user-footer">
+                <div class="pull-left">
+                  <a href="/profile" class="btn btn-default btn-flat">Profile</a>
+                </div>
+                <div class="pull-right">
+                  <a href="/logout?redirect=<%= encodeURIComponent(req.originalUrl) %>" class="btn btn-default btn-flat">Sign out</a>
+                </div>
+              </li>
+            </ul>
+          </li>
+          <li><a href="/logout?redirect=<%= encodeURIComponent(req.originalUrl) %>"><i class="fa fa-sign-out"></i></a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>

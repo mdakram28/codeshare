@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+<%- include('../components/header',{title:'CODEShare : Welcome',includes:[]}) %>
+<style type="text/css">
+.bg {
+  background: url('/dist/img/jumbotron-bg.jpg') no-repeat center center;
+  position: fixed;
+  width: 100%;
+  height: 400px; /*same height as jumbotron */
+  top:0;
+  left:0;
+  z-index: -1;
+  box-shadow: 0px 0px 25px #333;
+}
+
+.jumbotron {
+  height: 400px;
+  color: white;
+  text-shadow: #444 0 1px 1px;
+  background:transparent;
+}
+
+.feature-icon{
+	background-color: #337AB7;
+	height: 150px;
+	width: 150px;
+	border-radius: 75px;
+	margin-left: -75px;
+	left:50%;
+	position: relative;
+
+    color: #fff;
+    text-shadow: 1px 1px 10px #666;
+    font-size: 7.0em;
+}
+
+form.register .form-group .glyphicon{
+	color:#777;
+}
+
+.wrapper{
+	background-color: white !important;
+}
+</style>
+</head>
+  <body class="skin-blue layout-top-nav" ng-app="mailApp" ng-controller="mailController" ng-cloak>
+    <%- include('../components/navbar-anonymous') %>
+
+  	<div class="bg"></div>
+	<div class="jumbotron text-center">
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-7">
+				<h1>Welcome to <b>CODE</b>Share</h1>
+				<p class="lead">Powerful collaboration, code share, and code management for
+open source and private projects and learning. Coderojects are always free.</p>
+			</div>
+	  		<div class="col-md-3">
+
+
+	  			<form class="register" action="/register" method="post">
+
+			      <div class="form-group has-feedback">
+			        <input type="text" class="form-control" placeholder="username" name="username">
+			        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+			      </div>
+			      <div class="form-group has-feedback">
+			        <input type="text" class="form-control" placeholder="Full name" name="full_name">
+			        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+			      </div>
+			      <div class="form-group has-feedback">
+			        <input type="email" class="form-control" placeholder="Email" name="email">
+			        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+			      </div>
+			      <div class="form-group has-feedback">
+			        <input type="password" class="form-control" placeholder="Password" name="password">
+			        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+			      </div>
+			      <div class="form-group has-feedback">
+			        <input type="password" name="confirmPass" class="form-control" placeholder="Retype password">
+			        <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+			      </div>
+			      <div class="row">
+			        <div class="col-xs-8">
+			          <div class="checkbox icheck">
+			            <label>
+			              <input type="checkbox"> I agree to the <a href="#">terms</a>
+			            </label>
+			          </div>
+			        </div>
+			        <!-- /.col -->
+			        <div class="col-xs-4">
+			          <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
+			        </div>
+			        <!-- /.col -->
+			      </div>
+			    </form>
+
+
+
+	  		</div>
+
+			<div class="col-md-1"></div>
+	  	</div>	
+	</div>
+  	
+
+	<div class="content container">
+		<div class="row text-center">
+			<div class="col-lg-4 text-center">
+				<div class="feature-icon"><span class="fa fa-code"></span></div>
+				<h1>Create and share codes</h1>
+			</div>
+
+			<div class="col-lg-4 text-center">
+				<div class="feature-icon"><span class="fa fa-share-alt"></span></div>
+				<h1>Connect with other coders</h1>
+			</div>
+
+			<div class="col-lg-4 text-center">
+				<div class="feature-icon"><span class="fa fa-trophy"></span></div>
+				<h1>Get on top of leaderboard</h1>
+			</div>
+		</div>
+	</div>
+  
+  <%- include('../components/footer') %>
+  
+<%- include('../components/footer-scripts',{includes:['slimscroll','fastclick','app','demo','script-mails']}) %> 
+
+<script type="text/javascript">
+	var app = angular.module('mailApp',[]);
+		app.controller('mailController',function($scope,$http){
+	});
+
+  	var jumboHeight = $('.jumbotron').outerHeight();
+	function parallax(){
+	    var scrolled = $(window).scrollTop();
+	    $('.bg').css('height', (jumboHeight-scrolled) + 'px');
+	}
+
+	$(window).scroll(function(e){
+	    parallax();
+	});
+</script>
+</body>
+</html>

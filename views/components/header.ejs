@@ -1,0 +1,130 @@
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title><%= title %></title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <meta name="google-site-verification" content="PSGPg8A6sjwx-gFTYFLrvK7m0JFeXGD5GL_U3XtRZqc" />
+  <script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-XXXXX-Y', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+  <!-- Bootstrap 3.3.5 -->
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/plugins/font-awesome-4.4.0/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <!--<link rel="stylesheet" href="/plugins/ionicons-2.0.1/css/ionicons.min.css">-->
+   <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> 
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/dist/css/AdminLTE.min.css">
+
+  <meta property="og:url"                content="http://www.nytimes.com/2015/02/19/arts/international/when-great-minds-dont-think-alike.html" />
+<meta property="og:type"               content="article" />
+<meta property="og:title"              content="When Great Minds Don’t Think Alike" />
+<meta property="og:description"        content="How much does culture influence creative thinking?" />
+<meta property="og:image"              content="emailapp-mdakram28.c9.io/profile-pic" />
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <% if(includes.indexOf('icheck')>=0){ %>
+    <!-- iCheck -->
+    <link rel="stylesheet" href="/plugins/iCheck/square/blue.css">
+  <% } %>
+  
+  
+  <% if(includes.indexOf('fullcalendar')>=0){ %>
+    <!-- fullCalendar 2.2.5-->
+    <link rel="stylesheet" href="/plugins/fullcalendar/fullcalendar.min.css">
+    <link rel="stylesheet" href="/plugins/fullcalendar/fullcalendar.print.css" media="print">
+  <% } %>
+  <link rel="stylesheet" href="/dist/css/skins/_all-skins.min.css">
+  <% if(includes.indexOf('wysihtml5')>=0){ %>
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+  <% } %>
+
+  <% if(includes.indexOf('icheck_flat')>=0){ %>
+    <!-- iCheck -->
+    <link rel="stylesheet" href="/plugins/iCheck/flat/blue.css">
+  <% } %>
+
+  <% if(includes.indexOf('selectize')>=0){ %>
+    <link rel="stylesheet" type="text/css" media="all" href="/plugins/selectize/css/selectize.default.css">
+  <% } %>
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak, .ng-hide {
+      display: none !important;
+    }
+  </style>
+
+<style type="text/css">
+.login-page, .register-page{
+  background: url(/dist/img/background.png) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.login-logo a, .register-logo a {
+    color: #fff;
+}
+.friend img{
+  height: 67px;
+  border: 1px solid #E0E0E0;
+}
+
+.friend .full-name{
+  padding-top: 31px;
+}
+
+.friend .btn{
+  margin-top: 16px;
+}
+
+.code img{
+  height: 38px;
+  border: 1px solid #E0E0E0;
+}
+
+.code .visibility div{
+  color:#ADADAD;
+  margin-top: 12px;
+}
+
+.code .time div{
+  color:#ADADAD;
+  margin-top: 11px;
+}
+
+.code a.title{
+  display: inline-block;
+}
+
+.code .language div{
+  color:grey;
+  margin-top: 11px;
+}
+
+.code .likes div{
+  display: block;
+  margin-top: 11px;
+  min-width: 40px;
+}
+
+.like{
+  margin-left: 20px;
+  width: 100%;
+}
+
+.like .toggle-like{
+  width: 200px;
+}
+</style>

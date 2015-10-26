@@ -1,0 +1,40 @@
+
+    <% if(req.path=='/compose' || req.path=='/mail') { %>
+        <a href="/mailbox?folder=inbox" class="btn btn-primary btn-block margin-bottom">Back to Inbox</a>
+    <% }else if(btn != undefined){ %>
+        <a href="<%- href %>" class="btn btn-primary btn-block margin-bottom"><%= btn %></a>
+    <% }else{ %>
+        <a href="/compose" class="btn btn-primary btn-block margin-bottom">Compose</a>
+    <% } %>
+
+    <div class="box box-solid">
+        <div class="box-header with-border">
+            <h3 class="box-title">Folders</h3>
+
+            <div class="box-tools">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+            </div>
+        </div>
+        <div class="box-body no-padding">
+            <ul class="nav nav-pills nav-stacked">
+                <% folders.forEach(function(folder){ %>
+                    <li><a href="/mailbox?folder=<%- folder %>"><i class="fa fa-<%- getFolderIcon(folder) %>"></i> <%- folder.capitalize() %> <span style="color:#01B1B1">({{total.<%- folder %>}})</span>
+                      <span class="label label-primary pull-right" ng-if="folders.<%- folder %> > 0 ">{{folders.<%- folder %> }}</span></a></li>
+                <% }) %>
+            </ul>
+        </div>
+        <!-- /.box-body -->
+    </div>
+    <!-- /. box -->
+    <div class="box box-solid">
+        <div class="box-header with-border">
+            <h3 class="box-title">Labels</h3>
+
+            <div class="box-tools">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+            </div>
+        </div>
+        <!-- /.box-body -->
+    </div>

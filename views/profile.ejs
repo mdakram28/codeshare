@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+<%- include('components/header',{title:'Profile'}) %>
+</head>
+<% if(!req.isAuthenticated()){ %>
+  <body class="skin-blue layout-top-nav" ng-app="mailApp" ng-controller="mailController" ng-cloak>
+  <div class="wrapper">
+    <%- include('components/navbar-anonymous') %>
+<% }else{ %>
+  <body class="hold-transition skin-blue sidebar-mini" ng-app="mailApp" ng-controller="mailController" ng-cloak>
+  <div class="wrapper">
+  <%- include('components/navbar') %>
+  <%- include('components/sidebar',{active:'profile',active_sub:''}) %>
+<% } %>
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        User Profile
+      </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+      <div class="row">
+        <div class="col-md-3">
+
+          <!-- Profile Image -->
+          <div class="box box-primary">
+            <div class="box-body box-profile">
+              <img class="profile-user-img img-responsive img-circle" src="/profile-pic?user=<%- profile.username %>" alt="User profile picture">
+
+              <h3 class="profile-username text-center"><%= profile.full_name %></h3>
+
+              <ul class="list-group list-group-unbordered">
+                <li class="list-group-item">
+                  <b><a href="/users/<%- encodeURIComponent(profile.username) %>/followers">Followers</a></b> <a class="pull-right"><%= profile.followers.length %></a>
+                </li>
+                <li class="list-group-item">
+                  <b><a href="/users/<%- encodeURIComponent(profile.username) %>/following">Following</a></b> <a class="pull-right"><%= profile.following.length %></a>
+                </li>
+                <li class="list-group-item">
+                  <b>Friends</b> <a class="pull-right"><%= profile.friends.length %></a>
+                </li>
+              </ul>
+              <% if(auth && !me){ %>
+              <a href="/follow?user=<%- encodeURIComponent(profile.username) %>&redirect=<%= encodeURIComponent(req.originalUrl) %>" class="btn btn-primary btn-block"><b><%= isFollowing?'Unfollow':'Follow' %></b></a>
+              <a href="/toggleContact?user=<%- encodeURIComponent(profile.username) %>&redirect=<%= encodeURIComponent(req.originalUrl) %>" class="btn btn-primary btn-block"><b><%= isFriend?'Remove from Contact':'Add to contact' %></b></a>
+              <% } %>
+              <a href="/compose?to=<%- encodeURIComponent(profile.username) %>" class="btn btn-primary btn-block"><b>Message</b></a>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+
+          <!-- About Me Box -->
+          <div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title">About Me</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <strong><i class="fa fa-book margin-r-5"></i> Education</strong>
+
+              <p class="text-muted">
+                B.S. in Computer Science from the University of Tennessee at Knoxville
+              </p>
+
+              <hr>
+
+              <strong><i class="fa fa-map-marker margin-r-5"></i> Location</strong>
+
+              <p class="text-muted">Malibu, California</p>
+
+              <hr>
+
+              <strong><i class="fa fa-pencil margin-r-5"></i> Skills</strong>
+
+              <p>
+                <span class="label label-danger">UI Design</span>
+                <span class="label label-success">Coding</span>
+                <span class="label label-info">Javascript</span>
+                <span class="label label-warning">PHP</span>
+                <span class="label label-primary">Node.js</span>
+              </p>
+
+              <hr>
+
+              <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
+
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-9">
+          <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#codes" data-toggle="tab">Codes</a></li>
+              <% if(me){ %><li><a href="#settings" data-toggle="tab">Settings</a></li><% } %>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane active" id="codes">
+                <%- include('./components/code/codesList') %>
+              </div>
+              <!-- /.tab-pane -->
+
+              <div class="tab-pane" id="settings">
+                <form class="form-horizontal">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-2 control-label">Name</label>
+
+                    <div class="col-sm-10">
+                      <input type="email" class="form-control" id="inputName" placeholder="Name">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputEmail" class="col-sm-2 control-label">Email</label>
+
+                    <div class="col-sm-10">
+                      <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox"> I agree to the <a href="#">terms and conditions</a>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                      <button type="submit" class="btn btn-danger">Submit</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <!-- /.tab-pane -->
+            </div>
+            <!-- /.tab-content -->
+          </div>
+          <!-- /.nav-tabs-custom -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+
+    </section>
+    <!-- /.content -->
+  </div>
+
+  <%- include('components/footer') %>
+  
+</div>
+
+
+<%- include('components/footer-scripts',{includes:['slimscroll','fastclick','app','demo','script-mails']}) %> 
+<% if(req.isAuthenticated()){ %>
+  <script>
+  app.controller('mailController2',function($scope,$http){
+  });
+  </script>
+<% }else{ %>
+  <script>
+  var app = angular.module('mailApp',[]);
+  app.controller('mailController',function($scope,$http){
+  });
+  </script>
+<% } %>
+</body>
+</html>

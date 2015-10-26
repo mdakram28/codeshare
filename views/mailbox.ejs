@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  
+  <%- include('components/header',{title:'mailbox',includes:['icheck_flat','fullcalendar']}) %>
+  
+  <style>
+    .mailbox tr.read{
+      background-color:#E2E0E0 !important;
+    }
+  </style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini" ng-app="mailApp" ng-controller="mailController" ng-cloak>
+<div class="wrapper">
+
+  <%- include('components/navbar') %>
+  
+  <%- include('components/sidebar',{active:'mailbox',active_sub:folder}) %>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Mailbox
+        <small>{{folders[folder]}} new messages</small>
+      </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        
+        <div class="col-md-3"><%- include('components/mailbox/folders') %></div>
+        
+        <div class="col-md-9">
+          <div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title">Inbox</h3>
+
+              <div class="box-tools pull-right">
+                <div class="has-feedback">
+                  <input type="text" class="form-control input-sm" placeholder="Search Mail" ng-model="mailSearch">
+                  <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                </div>
+              </div>
+              <!-- /.box-tools -->
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body no-padding">
+              <div class="mailbox-controls">
+                <!-- Check all button -->
+                <button type="button" class="btn btn-default btn-sm checkbox-toggle"><i class="fa fa-square-o"></i>
+                </button>
+                <div class="btn-group">
+                  <button ng-click="sendToTrash()" type="button" class="btn btn-default btn-sm"><i class="fa fa-trash-o"></i></button>
+                  <button ng-click="replySelected()" type="button" class="btn btn-default btn-sm"><i class="fa fa-reply"></i></button>
+                  <button type="button" class="btn btn-default btn-sm"><i class="fa fa-share"></i></button>
+                </div>
+                <!-- /.btn-group -->
+                <button ng-click="refreshMails()" type="button" class="btn btn-default btn-sm"><i class="fa fa-refresh"></i></button>
+                <div class="pull-right">
+                  {{offset+1}}-{{(offset+limit)>total[folder]?total[folder]:(offset+limit)}}/{{total[folder]}}
+                  <div class="btn-group">
+                    <button ng-click="prevPage()" ng-disabled="(offset-limit)<0" type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-left"></i></button>
+                    <button ng-click="nextPage()" ng-disabled="(offset+limit)>=total[folder]" type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></button>
+                  </div>
+                  <!-- /.btn-group -->
+                </div>
+                <!-- /.pull-right -->
+              </div>
+              <div class="table-responsive mailbox-messages">
+                <table class="table table-hover table-striped mailbox">
+                  <tbody>
+                    
+                  <tr ng-repeat="mail in mails" ng-show="match(mail)" ng-class="{true:'read', false:'unread'}[mail.read]">
+                    <td><input type="checkbox" ng-model="mail.selected"></td>
+                    <td class="mailbox-star"><a ng-href="#"><i class="fa fa-star text-yellow"></i></a></td>
+                    <% if(folder!='draft'){ %>
+                      <td class="mailbox-name"><a href="/mail?f={{folder}}&i={{$index+offset}}">{{mail._sender.full_name}}</a></td>
+                    <% }else{ %>
+                      <td class="mailbox-name"><a href="/compose?model={{mail._mail._id}}"><b>{{mail._mail.subject}}{{mail._mail.subject==''?'No Subject':''}}</b></a></td>
+                    <% } %>
+                    <td class="mailbox-subject"><b>{{mail._mail.subject}}{{mail._mail.subject==''?'No Subject':''}}</b> - {{mail._mail.content}}...
+                    </td>
+                    <td class="mailbox-attachment"></td>
+                    <% if(folder!='draft'){ %><td class="mailbox-date">{{mail.diffDate}}</td><% }%>
+                  </tr>
+
+                  </tbody>
+                </table>
+                <!-- /.table -->
+              </div>
+              <!-- /.mail-box-messages -->
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer no-padding">
+              <div class="mailbox-controls">
+                <!-- Check all button -->
+                <button type="button" class="btn btn-default btn-sm checkbox-toggle"><i class="fa fa-square-o"></i>
+                </button>
+                <div class="btn-group">
+                  <button ng-click="sendToTrash()" type="button" class="btn btn-default btn-sm"><i class="fa fa-trash-o"></i></button>
+                  <button ng-click="replySelected()" type="button" class="btn btn-default btn-sm"><i class="fa fa-reply"></i></button>
+                  <button type="button" class="btn btn-default btn-sm"><i class="fa fa-share"></i></button>
+                </div>
+                <!-- /.btn-group -->
+                <button ng-click="refreshMails()" type="button" class="btn btn-default btn-sm"><i class="fa fa-refresh"></i></button>
+                <div class="pull-right">
+                  <!-- {{offset+1}}-{{(offset+limit)>(total.<%- folder %>)?(total.<%- folder %>):(offset+limit)}}/{{total.<%- folder %>}} -->
+                  <div class="btn-group">
+                    <button ng-click="prevPage()" type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-left"></i></button>
+                    <button ng-click="nextPage()" type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></button>
+                  </div>
+                  <!-- /.btn-group -->
+                </div>
+                <!-- /.pull-right -->
+              </div>
+            </div>
+
+            <div class="overlay hidden" id="refreshing-icon">
+              <i class="fa fa-refresh fa-spin" style="margin-top:15px;top:0px"></i>
+            </div>
+          </div>
+          <!-- /. box -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </section>
+    <!-- /.content -->
+  </div>
+  
+  
+  <%- include('components/footer') %>
+  
+  
+</div>
+<!-- ./wrapper -->
+<%- include('components/footer-scripts',{includes:['slimscroll','fastclick','app','demo','icheck','script-mails']}); %>
+<script>
+  $(function () {
+    console.log('started');
+    //Enable iCheck plugin for checkboxes
+    //iCheck for checkbox and radio inputs
+    $('.mailbox-messages input[type="checkbox"]').iCheck({
+      checkboxClass: 'icheckbox_flat-blue',
+      radioClass: 'iradio_flat-blue'
+    });
+
+    //Enable check and uncheck all functionality
+    $(".checkbox-toggle").click(function () {
+      var clicks = $(this).data('clicks');
+      if (clicks) {
+        //Uncheck all checkboxes
+        $(".mailbox-messages input[type='checkbox']").iCheck("uncheck");
+        $(".fa", this).removeClass("fa-check-square-o").addClass('fa-square-o');
+
+        for(index in scope.mails)scope.mails[index].selected = false;
+
+      } else {
+        //Check all checkboxes
+        $(".mailbox-messages input[type='checkbox']").iCheck("check");
+        $(".fa", this).removeClass("fa-square-o").addClass('fa-check-square-o');
+
+        for(index in scope.mails)scope.mails[index].selected = true;
+      }
+      $(this).data("clicks", !clicks);
+    });
+
+    //Handle starring for glyphicon and font awesome
+    $(".mailbox-star").click(function (e) {
+      console.log('clicked');
+      e.preventDefault();
+      //detect type
+      var $this = $(this).find("a > i");
+      var glyph = $this.hasClass("glyphicon");
+      var fa = $this.hasClass("fa");
+
+      //Switch states
+      if (glyph) {
+        $this.toggleClass("glyphicon-star");
+        $this.toggleClass("glyphicon-star-empty");
+      }
+
+      if (fa) {
+        $this.toggleClass("fa-star");
+        $this.toggleClass("fa-star-o");
+      }
+    });
+  });
+  
+  app.controller('mailController2',function($scope,$http,$window){
+    $scope.sendToTrash = function(){
+      startLoading();
+      var comlpeted = function(){
+        $.notify('Mails deleted successfully');
+        refresh();
+        endLoading();
+      }
+      var asyncDelete = function(ind){
+        //console.log(ind);
+        if(ind==$scope.mails.length){
+          comlpeted();
+        }
+        else if(!$scope.mails[ind].selected){
+          asyncDelete(ind+1);
+        }else{
+          var moveTo = folder=='trash'?'permanentDelete':"trash";
+          sendMailToFolder($scope,$http,$scope.mails[ind],moveTo,function(err){
+            //console.log($scope.mails[ind]);
+            if(err)return;
+            asyncDelete(ind+1);
+          });
+        }
+      }
+      asyncDelete(0);
+    };
+    $scope.refreshMails = function(){
+      refresh();
+    };
+    $scope.replySelected = function(){
+      var selectedMails="";
+      for(index in $scope.mails){
+        if($scope.mails[index].selected){
+          selectedMails+=$scope.mails[index]._sender.username;
+          if(index!=$scope.mails.length-1){
+            selectedMails+=";";
+          }
+        }
+      }
+      //console.log(selectedMails);
+      $window.location.href = '/compose?to='+encodeURIComponent(selectedMails);
+    };
+
+    $scope.nextPage = function(){
+      if(($scope.offset+$scope.limit)<$scope.total[folder]){
+        $scope.offset+=$scope.limit;
+        refresh();
+      }
+    };
+
+    $scope.prevPage = function(){
+      if($scope.offset==0)return;
+      if(($scope.offset-$scope.limit)>=0){
+        $scope.offset-=$scope.limit;
+        refresh();
+      }else{
+        $scope.offset=0;
+        refresh();
+      }
+    };
+
+    $scope.match = function(mail){
+      //return true;
+      $scope.mailSearch = $scope.mailSearch || "";
+      return (mail._mail.subject.toLowerCase().indexOf($scope.mailSearch.toLowerCase())>=0 ||
+        mail._mail.content.toLowerCase().indexOf($scope.mailSearch.toLowerCase())>=0);
+    };
+  });
+
+  
+</script>
+
+</body>
+</html>

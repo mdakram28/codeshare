@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+<%- include('components/header',{title:'Search results',includes:[]}) %>
+
+</head>
+<% if(!req.isAuthenticated()){ %>
+  <body class="skin-blue layout-top-nav" ng-app="mailApp" ng-controller="mailController" ng-cloak>
+  <div class="wrapper">
+    <%- include('components/navbar-anonymous') %>
+<% }else{ %>
+  <body class="hold-transition skin-blue sidebar-mini" ng-app="mailApp" ng-controller="mailController" ng-cloak>
+  <div class="wrapper">
+  <%- include('components/navbar') %>
+  <%- include('components/sidebar',{active:'',active_sub:''}) %>
+<% } %>
+  
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Search
+        <small>Universal search results</small>
+      </h1>
+    </section>
+
+    <section class="content row">
+      <div class="col-md-10">
+        <div class="nav-tabs-custom">
+          <ul class="nav nav-tabs">
+            <li <% if(tab=='friends'){ %>class="active"<% } %>><a href="#tab_friends" data-toggle="tab">users</a></li>
+            <li <% if(tab=='members'){ %>class="active"<% } %>><a href="#tab_members" data-toggle="tab">All members</a></li>
+            <li <% if(tab=='codes'){ %>class="active"<% } %>><a href="#tab_codes" data-toggle="tab">Codes</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane <%- tab=='friends'?'active':'' %>" id="tab_friends">
+              <%= result_members.length==0 ? 'Search result is empty' : '' %>
+              <div class="box-body table-responsive no-padding">
+                <table class="table table-hover">
+                  <tbody>
+                    <% result_members.forEach(function(friend,index){ %>
+                      <tr class="friend" ng-show="result_members[<%- index %>].match">
+                        <td><a href="/profile?user=<%- friend.username %>"><img src="/profile-pic?user=<%- friend.username %>"></a></td>
+                        <td class="full-name"><a href="/profile?user=<%- friend.username %>"><%= friend.full_name %> <span style="color:#BBBBBB"><%= friend.username %></span></a></td>
+                        <td ng-show="!(result_members[<%- index %>].me)"><a href="/compose" class="btn btn-default">View Profile</a></td>
+                        <td ng-show="!result_members[<%- index %>].isFriend && !(result_members[<%- index %>].me) && auth"><button ng-click="addFriend('<%- index %>')" class="btn btn-success">Add to Contacts</button></td>
+                        <td ng-show="result_members[<%- index %>].isFriend && !(result_members[<%- index %>].me) && auth"><button ng-click="removeFriend('<%- index %>')" class="btn btn-danger">Remove Friend</button></td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane <%- tab=='members'?'active':'' %>" id="tab_members">
+              <div class="box-body table-responsive no-padding">
+                <table class="table table-hover">
+                  <tbody>
+                    <% result_members.forEach(function(friend,index){ %>
+                      <tr class="friend">
+                        <td><a href="/profile?user=<%- friend.username %>"><img src="/profile-pic?user=<%- friend.username %>"></a></td>
+                        <td class="full-name"><a href="/profile?user=<%- friend.username %>"><%= friend.full_name %> <span style="color:#BBBBBB"><%= friend.username %></span></a></td>
+                        <td ng-show="!(result_members[<%- index %>].me)"><a href="/compose" class="btn btn-default">View Profile</a></td>
+                        <td ng-show="(!result_members[<%- index %>].isFriend) && !(result_members[<%- index %>].me) && auth"><button ng-click="addFriend('<%- index %>')" class="btn btn-success">Add to Contacts</button></td>
+                        <td ng-show="result_members[<%- index %>].isFriend && !(result_members[<%- index %>].me) && auth"><button ng-click="removeFriend('<%- index %>')" class="btn btn-danger">Remove Friend</button></td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane <%- tab=='codes'?'active':'' %>" id="tab_codes">
+              <%- include("./components/code/codesList") %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+  
+  <%- include('components/footer') %>
+  
+</div>
+<% if(req.isAuthenticated()){ %>
+  <%- include('components/footer-scripts',{includes:['slimscroll','fastclick','app','demo','script-mails']}) %> 
+  <script type="text/javascript">
+    app.controller('mailController2',function($scope,$http){
+<% }else{%>
+  <%- include('components/footer-scripts',{includes:['slimscroll','fastclick','app','demo']}) %> 
+  <script type="text/javascript">
+  var app = angular.module('mailApp',[]);
+  app.controller('mailController',function($scope,$http){
+<% } %>
+    $scope.result_members = <%- JSON.stringify(result_members) %>;
+    $scope.auth = <%- req.isAuthenticated() %>;
+    <% if(req.isAuthenticated()){ %>
+    $scope.addFriend = function(id){
+      $http.get('/api/addFriend?user='+encodeURIComponent($scope.result_members[id].username)).then(
+        function(response){
+          if(response.data.success){
+            $.notify("Friend added successfully");
+            $scope.result_members[id].isFriend = true;
+          }else{
+            $.notify("Unable to add friend at the moment","error");
+          }
+        },
+        function(response){
+          $.notify("Unable to add friend at the moment","error");
+        }
+        );
+    };
+
+    $scope.removeFriend = function(id){
+      $http.get('/api/removeFriend?user='+encodeURIComponent($scope.result_members[id].username)).then(
+        function(response){
+          if(response.data.success){
+            $.notify("Friend removed successfully");
+            $scope.result_members[id].isFriend = false;
+          }else{
+            $.notify("Unable to remove friend at the moment","error");
+          }
+        },
+        function(response){
+          $.notify("Unable to remove friend at the moment","error");
+        }
+      );
+    };
+
+    <% } %>
+  });
+</script>
+</body>
+</html>
