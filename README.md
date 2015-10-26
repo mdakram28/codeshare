@@ -1,2 +1,0 @@
-# codeshare
-Code sharing app
