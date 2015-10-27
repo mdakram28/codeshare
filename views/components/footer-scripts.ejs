@@ -47,7 +47,7 @@
 
 
 <script src="/plugins/moment/moment.js"></script>
-<script type="text/javascript" src="/plugins/notify/notify-combined.js"></script>
+<!-- <script type="text/javascript" src="/plugins/notify/notify-combined.js"></script> -->
 <script type="text/javascript" src="/angular/angular.min.js" ></script>
   
 <% if(includes.indexOf('script-mails')>=0 && req.isAuthenticated()){ %>
@@ -181,8 +181,17 @@ function runForeverIsActive(){
     })
 }
 
+$.notify = function(msg,type){
+    type = type || 'success';
+	if(! $('.alert-box').length) {
+		$('<div class="alert-box '+type+'" >'+msg+'</div>').prependTo('body').delay(50000).fadeOut(1000, function() {
+            $('.alert-box').remove();
+            });
+	};
+}
+
 app.controller('mailController',function($scope,$http,$controller,$httpParamSerializerJQLike,$window){
-    $.notify.defaults({ className: "success" , position: "top"});
+    //$.notify.defaults({ className: "success" , position: "top"});
     scope = $scope;
     http=$http;
     $scope.offset = 0;
