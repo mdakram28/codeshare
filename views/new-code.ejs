@@ -174,7 +174,7 @@ langSelector.change(function(ev){
       $scope.visibility = '<%- code?code.visibility:"pb" %>';
       $scope.title = '<%- code?code.title:"My First Code" %>';
       $scope.url = '<%- code?code.url:'' %>';
-      $scope.description = '<%- code?code.description:"" %>';
+      $scope.description = '<%- code?code.description.split("\n").join("\\n"):"" %>';
       //a1.updateOriginalInput();
     };
     $scope.defaults();
