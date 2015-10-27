@@ -58,5 +58,5 @@ require("./app/code-routes.js")(app, passport, socketHandler);
 
 // launch ======================================================================
 server.listen(port);
-console.log("Configured git to work on cloud9 and local sds");
+console.log("Configured git to work on cloud9 and local");
 console.log('Running server on port : ' + port);
