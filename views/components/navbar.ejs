@@ -63,7 +63,7 @@
           <li class="dropdown notifications-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" ng-click="readNotifications()">
               <i class="fa fa-bell-o"></i>
-              <span class="label label-warning" ng-if="notifs_unread > 0">{{notifs_unread}}</span>
+              <span class="label label-danger" style="font-size:15px" ng-if="notifs_unread > 0">{{notifs_unread}}</span>
             </a>
             <ul class="dropdown-menu">
               <li class="header">You have <%= notifs_unread %> notifications</li>

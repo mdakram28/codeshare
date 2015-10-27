@@ -1,5 +1,5 @@
 <% notifs.forEach(function(notif){ %>
-  <li <%- notif.read==false?'style="background-color:rgba(216, 27, 96, 0.4);"':'' %>>
+  <li <%- notif.read==false?'style="background-color:#CCC"':'' %>>
   <% if(notif.type=="new-follower"){ %>
     <a href="/users/<%- encodeURIComponent(req.user.username) %>/followers">
       <i class="fa fa-users text-aqua"></i> You now have <%- req.user.followers.length %> followers.
