@@ -11,8 +11,7 @@ var request = require("request");
 
 module.exports = function(app, passport, sockets) {
 
-    app.post('/upload-profile-pic', require("multer")({
-        dest: './uploads/'
+    app.post('/upload-profile-pic', require("multer")({dest: './uploads/'
     }).single('profilepic'), interceptor.isLoggedInAPI, function(req, res) {
         //console.log(req.file);
         var dirname = require('path').dirname(__dirname);
@@ -41,11 +40,13 @@ module.exports = function(app, passport, sockets) {
             username = req.query.user;
         } else if (req.isAuthenticated()) {
             username = req.user.username;
+        }else{
+            res.sendStatus(404);
         }
         
         User.findOne({username:username},function(er, user) {
-            if(er)return res.send(500);
-            if(!user || !user.regno){
+            if(er || !user)return res.send(404);
+            if(!user.regno || req.local){
                 gfs.files.find({
                     _id: username
                 }).toArray(function(err, files) {
@@ -67,8 +68,6 @@ module.exports = function(app, passport, sockets) {
                 request('https://academics.vit.ac.in/student/view_photo_2.asp?rgno='+user.regno).pipe(res);
             }
         });
-
-        
     });
 
     app.get('/compose', interceptor.isLoggedIn, function(req, res) {
@@ -125,6 +124,9 @@ module.exports = function(app, passport, sockets) {
     });
 
     app.get('/mailbox', interceptor.isLoggedIn, function(req, res) {
+
+
+
         res.render('mailbox');
     });
 
@@ -249,6 +251,24 @@ module.exports = function(app, passport, sockets) {
                         callback();
                     });
                 });
+            },
+            function(callback){
+                res.locals.resultEmpty = true;
+                res.locals.result_members.forEach(function(result){
+                    if(result.match){
+                        res.locals.resultEmpty = false;
+                        return true;
+                    }
+                });
+
+                res.locals.codesEmpty = true;
+                res.locals.codes.forEach(function(code){
+                    if(code.match){
+                        res.locals.codesEmpty = false;
+                        return true;
+                    }
+                });
+                callback();
             }
         ], function(err, result) {
             if (err) {
@@ -295,7 +315,7 @@ module.exports = function(app, passport, sockets) {
     });
 
     app.get('/mail', interceptor.isLoggedIn, function(req, res) {
-        res.locals.folderView = req.query.f || 'index';
+        res.locals.folderView = req.query.f || 'inbox';
         res.locals.index = req.query.i || 0;
         var ret = [];
         if (req.query.id != undefined) {
@@ -310,7 +330,6 @@ module.exports = function(app, passport, sockets) {
                     } else {
                         //console.log(mail._receiver);
                         //console.log(req.user._id);
-                        //console.log(mail);
                         if (!util.isUsersMail(mail, req.user, true)) return callback(new Error('Unauthorized'));
                         else if (!mail.read) {
                             //mail.read = true;
@@ -320,7 +339,7 @@ module.exports = function(app, passport, sockets) {
                             if (err) {
                                 callback(err);
                             } else {
-                                callback(null, mail);   
+                                callback(null, mail);
                             }
                         })
                     }
@@ -351,12 +370,10 @@ module.exports = function(app, passport, sockets) {
                                 if (err) {
                                     return callback2(err);
                                 }
-                                mail = JSON.parse(JSON.stringify(mail));
-                                mail._mail._sender = {
-                                    username: sender.username,
-                                    full_name: sender.full_name
-                                };
-                                ret.push(mail._mail);
+                                mail._mail._sender.username = sender.username;
+                                mail._mail._sender.full_name = sender.full_name;
+                                console.log(mail);
+                                ret.push(mail);
                                 callback2();
                             });
                         } else {
@@ -373,22 +390,33 @@ module.exports = function(app, passport, sockets) {
                 });
             }, function(callback) {
                 if(ret==undefined)return callback(new Error("Out of range id"));
-                util.isUsersMail(ret, req.user, true);
-                callback();
+                var mail = ret;
+                if (!util.isUsersMail(mail._mail, req.user, true)) return callback(new Error('Unauthorized'));
+                else if (!mail._mail.read) {
+                    mail._mail.read = true;
+                    mail._mail.date_read = new Date();
+                }
+                mail._mail.save(function(err) {
+                    if (err) {
+                        callback(err);
+                    } else {
+                        callback(null);
+                    }
+                })
             }], function(err, result) {
                 if (err) {
                     res.render('500');
                 } else if (!ret) {
                     res.render('500');
                 } else {
-                    res.locals.mail = ret;
+                    res.locals.mail = ret._mail;
                     res.render('read-mail');
                 }
             });
         }
     });
 
-    app.get('/follow', function(req, res) {
+    app.get('/follow', function(req, res) {        
         var end = function() {
             require("./redirect-handler.js")(req, res);
         }
@@ -456,6 +484,52 @@ module.exports = function(app, passport, sockets) {
             }
             req.user.save();
             end();
+        });
+    });
+
+    app.post("/updateUserSettings",interceptor.isLoggedIn,function(req,res){
+        var error = {field:''}
+        var msg = util.validateSignupFields(req.user.username,req.body.full_name,req.body.email,req.user.password,error);
+        if(msg!='' && msg!=undefined){
+            req.flash("error_message",msg);
+            req.flash("error_field",error.field);
+            return res.redirect("/profile?tab=settings");
+        }
+
+        if(!req.body.full_name || req.body.full_name=='' || !req.body.email || req.body.email==''){
+            req.flash("error_message","One or more fields are empty");
+            return res.redirect("/profile?tab=settings");
+        }
+
+        req.user.full_name = req.body.full_name;
+        req.user.email = req.body.email;
+
+        if(req.body.prevPass!='' && req.body.newPass!='' && req.body.confPass!=''){
+            if(!req.user.validPassword(req.body.prevPass)){
+                req.flash("error_message","Original passwords incorrect");
+                return res.redirect("/profile?tab=settings");
+            }
+            if(req.body.confPass!=req.body.newPass){
+                req.flash("error_message","new passwords do not match");
+                return res.redirect("/profile?tab=settings");
+            }
+            msg = util.validateSignupFields(req.user.username,req.body.full_name,req.body.email,req.body.newPass,error);
+            if(msg!='' && msg!=undefined){
+                req.flash("error_message",msg);
+                return res.redirect("/profile?tab=settings");
+            }
+            req.user.password = req.user.generateHash(req.body.newPass);
+        }else if((req.body.prevPass!='' && req.body.prevPass!=undefined) || (req.body.newPass!='' && req.body.newPass!=undefined) || (req.body.confPass!='' && req.body.confPass!=undefined)){
+            req.flash("error_message","One or more password field(s) are blank");
+            res.redirect("/profile?tab=settings");
+        }
+        req.user.save(function(err,user){
+            if(err){
+                req.flash("error_message","Some error occurred while saving new user settings");
+                return res.redirect("/profile?tab=settings");
+            }
+            req.flash("success_message","Settings successfully updated");
+            res.redirect("/profile?tab=settings");
         });
     });
 }

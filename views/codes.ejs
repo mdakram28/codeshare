@@ -43,13 +43,13 @@
 <% if(req.isAuthenticated()){ %>
 <script type="text/javascript">
     app.controller('mailController2',function($scope,$http){
-    }
+    });
 </script>
 <% }else{%>
 <script type="text/javascript">
   var app = angular.module('mailApp',[]);
   app.controller('mailController',function($scope,$http){
-  }
+  });
 </script>
 <% } %>
 </body>

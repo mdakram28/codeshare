@@ -30,12 +30,14 @@
         <div class="nav-tabs-custom">
           <ul class="nav nav-tabs">
             <li <% if(tab=='friends'){ %>class="active"<% } %>><a href="#tab_friends" data-toggle="tab">users</a></li>
+            <% if(!req.dev){ %>
             <li <% if(tab=='members'){ %>class="active"<% } %>><a href="#tab_members" data-toggle="tab">All members</a></li>
+            <% } %>
             <li <% if(tab=='codes'){ %>class="active"<% } %>><a href="#tab_codes" data-toggle="tab">Codes</a></li>
           </ul>
           <div class="tab-content">
             <div class="tab-pane <%- tab=='friends'?'active':'' %>" id="tab_friends">
-              <%= result_members.length==0 ? 'Search result is empty' : '' %>
+              <div class="text-red text-center"><%= resultEmpty ? 'No users found for this search query' : '' %></div>
               <div class="box-body table-responsive no-padding">
                 <table class="table table-hover">
                   <tbody>
@@ -53,6 +55,7 @@
               </div>
             </div>
             <div class="tab-pane <%- tab=='members'?'active':'' %>" id="tab_members">
+
               <div class="box-body table-responsive no-padding">
                 <table class="table table-hover">
                   <tbody>
@@ -70,6 +73,7 @@
               </div>
             </div>
             <div class="tab-pane <%- tab=='codes'?'active':'' %>" id="tab_codes">
+              <div class="text-red text-center"><%= codesEmpty ? 'No codes found for this search query' : '' %></div>
               <%- include("./components/code/codesList") %>
             </div>
           </div>

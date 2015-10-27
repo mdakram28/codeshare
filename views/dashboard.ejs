@@ -30,10 +30,10 @@
             </div>
           </div>
         </div> -->
-        <div class="col-md-3"><a href="/friends" class="btn bg-maroon btn-block btn-flat" style="width:100%;height:50px"><h4>Friends</h4></a></div>
-        <div class="col-md-3"><a href="/codes" class="btn bg-maroon btn-block btn-flat" style="width:100%;height:50px"><h4>My Codes</h4></a></div>
-        <div class="col-md-3"><a href="/newcode" class="btn bg-maroon btn-block btn-flat" style="width:100%;height:50px"><h4>Create new Code</h4></a></div>
-        <div class="col-md-3"><a href="/compose" class="btn bg-maroon btn-block btn-flat" style="width:100%;height:50px"><h4>Create new message</h4></a></div>
+        <div class="col-md-3"><a href="/friends" class="btn bg-maroon btn-block btn-flat" style="width:100%"><h1><i class="fa fa-users"></i></h1><h4>Friends</h4></a></div>
+        <div class="col-md-3"><a href="/codes" class="btn bg-maroon btn-block btn-flat" style="width:100%"><h1><i class="fa fa-file-code-o"></i></h1><h4>My Codes</h4></a></div>
+        <div class="col-md-3"><a href="/newcode" class="btn bg-maroon btn-block btn-flat" style="width:100%"><h1><i class="fa fa-plus"></i> <i class="fa fa-file-code-o"></i></h1><h4>Create new Code</h4></a></div>
+        <div class="col-md-3"><a href="/compose" class="btn bg-maroon btn-block btn-flat" style="width:100%"><h1><i class="fa fa-plus"></i> <i class="fa fa-envelope"></i></h1><h4>Create new message</h4></a></div>
       </div>
       <br>
       <div class="row">
@@ -58,7 +58,7 @@
         <div class="col-md-6">
           <div class="box box-solid">
             <div class="box-header with-border">
-              <h3 class="box-title">Leaderboard</h3> <span class="text-primary"><% if(req.isAuthenticated()){ %>( your rank : <% leaderboard.forEach(function(leader,index){if(leader.username==user.username){ %><%- index+1 %><% }}) %> )<% } %></span>
+              <h3 class="box-title">Leaderboard</h3> <span class="text-primary"><% if(req.isAuthenticated()){ %>( your rank : <% leaderboard.forEach(function(leader,index){if(leader.username==user.username){ %><%= index+1 %><% }}) %> )<% } %></span>
 
               <div class="box-tools">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -76,7 +76,7 @@
                   <% leaderboard.forEach(function(leader,index){if(index<10){ %>
                   <tr>
                     <td>#<%- index+1 %></td>
-                    <td><a style="display:block" href="/profile?user=<%- encodeURIComponent(leader.username) %>"><b><%- leader.username %></b> <div class="text-muted"><%- leader.full_name %></div></a></td>
+                    <td><a style="display:block" href="/profile?user=<%- encodeURIComponent(leader.username) %>"><b><%= leader.username %></b> <div class="text-muted"><%= leader.full_name %></div></a></td>
                     <td><%- leader.totalLikes %></td>
                   </tr>
                   <% }}) %>

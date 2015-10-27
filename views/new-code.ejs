@@ -19,7 +19,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        New CODE
+        <% if(code){ %>New CODE<% else{ %>Edit Code<% } %>
         <small>Fill out the details</small>
         <div class"pull-right" style="float:right;width:50%">
           <div class="input-group input-group-sm">
@@ -38,10 +38,15 @@
           <div class="box">
             <div class="box-header with-border">Code</div>
             <div class="box-body">
-              <div id="editor">function foo(items) {
-  var x = "All this is syntax highlighted";
-  return x;
-}</div>
+              <div id="editor"><% if(code){ %><%- code.content %>
+<% }else{ %>
+#sample python 3.0 code
+#write your code here
+#fill the title , unique url , description and the language of your code.
+var output = "Learn and share codes with codeGabbar . Enjoy coding"
+print(output)
+#code end
+<% } %></div>
             </div>
           </div>
         </div>
@@ -58,23 +63,23 @@
                 </div>
               </div>
               <br>
-              <input class="form-control input-lg" name="title" type="text" ng-model="title" placeholder="Title">
+              <input <%- code?'value="'+code.title+'"':'' %> class="form-control input-lg" name="title" type="text" ng-model="title" placeholder="Title">
               <br>
-              <input class="form-control" type="text" ng-model="url" placeholder="url-title : {{getUrl(title)}}">
+              <input <%- code?'value="'+code.url+'"':'' %> class="form-control" type="text" ng-model="url" placeholder="url-title : {{getUrl(title)}}">
               <br>
-              <textarea class="form-control" ng-model="description" type="text" placeholder="description"></textarea>
+              <textarea class="form-control" ng-model="description" type="text" placeholder="description"><%- code?code.description:'' %></textarea>
               <br>Language : <br>
               <select id="select-language" ng-model="language" class="demo-default" placeholder="Select language">
                 <% languages.forEach(function(lang){ %>
-                <option value='<%- lang %>' <%- lang=='python' ? 'selected':'' %>><%= lang.capitalize() %></option>
+                <option value='<%- lang %>' <%- (!code && lang=='python') || (code && lang==code.language) ? 'selected':'' %>><%= lang.capitalize() %></option>
                 <% }) %>
               </select>
               <br>Visibility  : <br>
               <select id="select-visibility" ng-model="visibility" class="demo-default" placeholder="Select visibility">
-                <option value="pb">Public</option>
-                <option value="ff">Friends of Freinds</option>
-                <option value="fr">Friends</option>
-                <option value="pt">Private</option>
+                <option value="pb" <%- code && code.visibility=="pb"?'selected':'' %>>Public</option>
+                <option value="ff" <%- code && code.visibility=="ff"?'selected':'' %>>Friends of Freinds</option>
+                <option value="fr" <%- code && code.visibility=="fr"?'selected':'' %>>Friends</option>
+                <option value="pt" <%- code && code.visibility=="pt"?'selected':'' %>>Private</option>
               </select>
             </div>
             <div class="overlay hidden" id="refreshing-icon">
@@ -119,14 +124,20 @@ editor.getSession().setMode("ace/mode/python");
 editor.setOption("maxLines", 100);
 editor.setOption("minLines", 26);
 
-$('#select-language').selectize();
+var langSelector = $('#select-language').selectize();
 $('#select-visibility').selectize();
+
+langSelector.change(function(ev){
+  editor.getSession().setMode("ace/mode/"+langSelector.val());
+});
+
   app.controller('mailController2',function($scope,$http,$httpParamSerializerJQLike){
     $scope.username="<%- user.username %>";
     $scope.codeBase = "http://localhost:8080/code";
     $scope.save = function(){
       $('#refreshing-icon').removeClass('hidden');
       var formdata = {
+        <%- code?'id:"'+code._id+'",':'' %>
         title:$scope.title,
         url: ($scope.url=='' || !$scope.url)?$scope.getUrl($scope.title):$scope.url,
         description:$scope.description || '',
@@ -159,9 +170,11 @@ $('#select-visibility').selectize();
       });
     };
     $scope.defaults = function(){
-      $scope.language = 'python';
-      $scope.visibility = 'pb';
-      $scope.title = "My first code";
+      $scope.language = '<%- code?code.language:"python" %>';
+      $scope.visibility = '<%- code?code.visibility:"pb" %>';
+      $scope.title = '<%- code?code.title:"My First Code" %>';
+      $scope.url = '<%- code?code.url:'' %>';
+      $scope.description = '<%- code?code.description:"" %>';
       //a1.updateOriginalInput();
     };
     $scope.defaults();

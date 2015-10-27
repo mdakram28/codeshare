@@ -52,7 +52,18 @@ module.exports = function(app, passport, sockets) {
     
     app.get('/newcode', interceptor.isLoggedIn, function(req,res){
     	res.locals.languages = config.languages;
+        res.locals.code = undefined;
         res.render('new-code');
+    });
+
+    app.get('/editCode',interceptor.isLoggedIn,function(req,res){
+        if(!req.query.id)return res.render("500");
+        Code.findOne({_id:req.query.id,owner:req.user._id},function(err,code){
+            if(err || !code)return res.render("500");
+            res.locals.code = code;
+            res.locals.languages = config.languages;
+            res.render('new-code');
+        });
     });
 
     app.get('/codes', function(req,res){

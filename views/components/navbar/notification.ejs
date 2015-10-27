@@ -6,15 +6,15 @@
     </a>
   <% }else if(notif.type=="following-new-code"){ %>
     <a href="/code/<%- encodeURIComponent(notif.content.username) %>/<%- encodeURIComponent(notif.content.code_url) %>">
-      <i class="fa fa-users text-aqua"></i> <b><%- notif.content.full_name %></b> added a new code - <%- notif.content.code_title %>.
+      <i class="fa fa-users text-aqua"></i> <b><%= notif.content.full_name %></b> added a new code - <%= notif.content.code_title %>.
     </a>
   <% }else if(notif.type=='added-as-contact'){ %>
     <a href="/profile?user=<%- encodeURIComponent(notif.content.username) %>">
-      <i class="fa fa-users text-aqua"></i> <b><%- notif.content.full_name %></b> added you as a contact.
+      <i class="fa fa-users text-aqua"></i> <b><%= notif.content.full_name %></b> added you as a contact.
     </a>
   <% }else if(notif.type=='code-liked'){ %>
     <a href="/code/<%- encodeURIComponent(notif.content.username) %>/<%- encodeURIComponent(notif.content.code_url) %>">
-      <i class="fa fa-users text-aqua"></i> Your code <b><%- notif.content.title %></b> now has <%- notif.content.likes %> likes.
+      <i class="fa fa-users text-aqua"></i> Your code <%- notif.content.title %> now has <%- notif.content.likes %> likes.
     </a>
   <% } %>
   </li>

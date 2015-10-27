@@ -52,7 +52,7 @@
   
 <% if(includes.indexOf('script-mails')>=0 && req.isAuthenticated()){ %>
 <script>
-var folder = "<%= folder %>";
+var folder = "<%= folderView %>";
 var socket = io();
 var app = angular.module('mailApp',[]);
 var scope,http;
@@ -169,6 +169,17 @@ function refresh(callback){
     });
     
 }
+function runForeverIsActive(){
+    $http.get('/api/isActive').then(function(res){
+        if(!res.data.success){
+            $.notify('Connection lost or session ended. Please log in to continue','error');
+        }
+        setTimeout(runForever,30000);
+    },function(res){
+        $.notify('Connection lost or session ended. Please log in to continue','error');
+        setTimeout(runForever,30000);
+    })
+}
 
 app.controller('mailController',function($scope,$http,$controller,$httpParamSerializerJQLike,$window){
     $.notify.defaults({ className: "success" , position: "top"});
@@ -188,6 +199,9 @@ app.controller('mailController',function($scope,$http,$controller,$httpParamSeri
     });
 
     socket.emit('register',id);
+    socket.on('disconnect',function(data){
+        $.notify("Connection lost. Trying to reconnect","error");
+    });
     socket.on('newMail',function(data){
         getUnreadMails($scope,$http);
         getMails($scope,$http);
@@ -195,18 +209,6 @@ app.controller('mailController',function($scope,$http,$controller,$httpParamSeri
     socket.on('loggedOut',function(data){
         $window.location.href = "/logout?redirect=<%- encodeURIComponent(req.originalUrl) %>";
     });
-    
-    (function runForever(){
-        $http.get('/api/isActive').then(function(res){
-            if(!res.data.success){
-                $.notify('Connection lost or session ended. Please log in to continue','error');
-            }
-            setTimeout(runForever,30000);
-        },function(res){
-            $.notify('Connection lost or session ended. Please log in to continue','error');
-            setTimeout(runForever,30000);
-        })
-    })();
 
     angular.extend(this, $controller('mailController2', {$scope: $scope, $http: $http, $httpParamSerializerJQLike: $httpParamSerializerJQLike, $window: $window}));
 });
@@ -217,6 +219,4 @@ app.controller('mailController',function($scope,$http,$controller,$httpParamSeri
 <script type="text/javascript">
 
 </script>
-
-
 <% } %>

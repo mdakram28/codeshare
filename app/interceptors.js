@@ -20,6 +20,7 @@ module.exports.allRequests = function(app, passport){
         else if (req.vars.redirect != '' && req.vars.redirect != undefined) {
             res.locals.redirect = req.vars.redirect;
         }
+        req.local = res.locals.local = process.env.PORT==undefined;
         res.locals.escape = escape;
         res.locals.req = req;
         res.locals.res = res;
@@ -28,9 +29,10 @@ module.exports.allRequests = function(app, passport){
         res.locals.btn = undefined;
         res.locals.href = undefined;
         res.locals.includes = [];
-        res.locals.folder = req.query.folder || 'inbox';
+        res.locals.folder = res.locals.folderView = req.query.folder || req.query.f || 'inbox';
         res.locals.notifs = [];
         res.locals.notifs_unread = 0;
+        res.locals.active = '';
 
         req.isAdmin = req.isAuthenticated() && req.user.username=="mdakram28";
         next();
@@ -138,7 +140,6 @@ function getFolderIcon(folder) {
 }
 
 function escape(s) {
-    if(!s)return "";
     //console.log(s);
     var ret = "";
     for(var i=0;i<s.length;i++){

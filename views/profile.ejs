@@ -102,44 +102,46 @@
         <div class="col-md-9">
           <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
-              <li class="active"><a href="#codes" data-toggle="tab">Codes</a></li>
-              <% if(me){ %><li><a href="#settings" data-toggle="tab">Settings</a></li><% } %>
+              <li class="<%- req.query.tab!='settings'?'active':'' %>"><a href="#codes" data-toggle="tab">Codes</a></li>
+              <% if(me){ %><li class="<%- req.query.tab=='settings'?'active':'' %>"><a href="#settings" data-toggle="tab">Settings</a></li><% } %>
             </ul>
             <div class="tab-content">
-              <div class="tab-pane active" id="codes">
+              <div class="tab-pane <%- req.query.tab!='settings'?'active':'' %>" id="codes">
                 <%- include('./components/code/codesList') %>
               </div>
               <!-- /.tab-pane -->
 
-              <div class="tab-pane" id="settings">
-                <form class="form-horizontal">
+              <div class="tab-pane <%- req.query.tab=='settings'?'active':'' %>" id="settings">
+                <form class="form-horizontal" action="/updateUserSettings" method="post">
                   <div class="form-group">
                     <label for="inputName" class="col-sm-2 control-label">Name</label>
 
                     <div class="col-sm-10">
-                      <input type="email" class="form-control" id="inputName" placeholder="Name">
+                      <input type="text" name="full_name" value="<%- user.full_name %>" class="form-control" id="inputFullName" placeholder="Full Name">
                     </div>
                   </div>
+
                   <div class="form-group">
                     <label for="inputEmail" class="col-sm-2 control-label">Email</label>
 
                     <div class="col-sm-10">
-                      <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+                      <input type="email" name="email" value="<%- user.email %>" class="form-control" id="inputEmail" placeholder="Email">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="inputEmail" class="col-sm-2 control-label">Password</label>
+
+                    <div class="col-sm-10">
+                      <input style="margin-bottom:5px" type="password" name="prevPass" class="form-control" placeholder="Original Password">
+                      <input style="margin-bottom:5px" type="password" name="newPass" class="form-control" placeholder="New Password">
+                      <input type="password" name="confPass" class="form-control" placeholder="Confirm Password">
                     </div>
                   </div>
 
                   <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                      <div class="checkbox">
-                        <label>
-                          <input type="checkbox"> I agree to the <a href="#">terms and conditions</a>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                      <button type="submit" class="btn btn-danger">Submit</button>
+                      <button type="submit" class="btn btn-danger">Save Changes</button>
                     </div>
                   </div>
                 </form>
@@ -163,16 +165,32 @@
 </div>
 
 
-<%- include('components/footer-scripts',{includes:['slimscroll','fastclick','app','demo','script-mails']}) %> 
+<%- include('components/footer-scripts',{includes:['slimscroll','fastclick','app','demo','script-mails']}) %>
+<script type="text/javascript">
+function run(){
+  <% 
+  var error_message = req.flash("error_message");
+  var success_message = req.flash("success_message"); %>
+  <% if(error_message.length>0){ %>
+    $.notify("<%- error_message %>","error");
+  <% } %>
+  <% if(success_message.length>0){ %>
+    $.notify("<%- success_message %>");
+  <% } %>
+  
+}
+</script>
 <% if(req.isAuthenticated()){ %>
   <script>
   app.controller('mailController2',function($scope,$http){
+    run();
   });
   </script>
 <% }else{ %>
   <script>
   var app = angular.module('mailApp',[]);
   app.controller('mailController',function($scope,$http){
+    run();
   });
   </script>
 <% } %>

@@ -401,15 +401,29 @@ module.exports = function(app, passport, sockets) {
                 Code.find({owner:req.user._id,url:url},function(err,code){
                     if(err)return callback(err);
                     if(code.length>0){
+                        //console.log(code[0]._id + " : " +req.body.id );
+                        if(req.body.id==code[0]._id)return callback();
                         message = "The requested url already exists please choose a diifferent one.";
                         callback(new Error(message));
                     }else{
                         callback();
                     }
                 });
+            },function(callback){
+                var newCode = new Code();
+                code = newCode;
+                if(req.body.id){
+                    Code.findOne({_id:req.body.id,owner:req.user._id},function(err,prevCode){
+                        if(err || !prevCode)return callback(new Erro("Tampered id"));
+                        code = prevCode;
+                        callback();
+                    });
+                }else{
+                    callback();
+                }
             },
             function(callback) {
-                var newCode = new Code();
+                var newCode = code;
                 newCode.owner = req.user._id;
                 newCode.description = desc;
                 newCode.content = content;
@@ -425,7 +439,6 @@ module.exports = function(app, passport, sockets) {
                     if (err) {
                         callback(err);
                     } else {
-                        code = newCode;
                         callback();
                     }
                 });

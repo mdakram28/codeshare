@@ -3,7 +3,9 @@
 <head>
   <%- include('components/header',{title:'Login to EmailApp',includes:['icheck']}) %>
 </head>
-<body class="hold-transition login-page" ng-app="mailApp" ng-controller="mailController">
+<body class="hold-transition login-page layout-top-nav skin-blue" ng-app="mailApp" ng-controller="mailController">
+
+    <%- include('./components/navbar-anonymous',{active:'login'}) %>
 <div class="login-box">
   <div class="login-logo">
     <a href="/"><b>CODE</b>Share</a>
@@ -75,7 +77,7 @@
   var app = angular.module('mailApp',[]);
   app.controller('mailController',function($scope,$http){
     
-  };
+  });
 </script>
 </body>
 </html>

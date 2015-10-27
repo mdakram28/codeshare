@@ -1,26 +1,10 @@
 var util = require("./util.js");
 var interceptor = require("./interceptors.js");
-var fs = require("fs");
 
 module.exports = function(app, passport, sockets) {
-    
-    app.post("/domainSuggestion",function(req,res) {
-        var data = req.isAuthenticated()?req.user.username:"anonymous";
-        data += " : "+req.body.sug+" : "+util.getDateTime()+"\n";
-        fs.appendFile("./public/domainSuggestions.txt",data,function(err){
-        });
-        require("./redirect-handler.js")(req, res);
-    });
 
-    app.post("/submitFeedback",function(req, res) {
-        var data = req.isAuthenticated()?req.user.username:"anonymous";
-        data += " : "+req.body.feed+" : "+util.getDateTime()+"\n";
-        fs.appendFile("./public/feedbacks.txt",data,function(err){
-        });
-        require("./redirect-handler.js")(req, res);
-    });
     app.get('/dashboard', interceptor.isLoggedIn, interceptor.totalLikes ,function(req, res) {
-        res.render("dashboard");
+        res,render("dashboard");
     });
 
     app.get('/', function(req,res){
