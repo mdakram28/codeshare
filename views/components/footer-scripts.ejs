@@ -190,10 +190,6 @@ $.notify = function(msg,type){
 	};
 }
 
-$('body').on('DOMNodeInserted', 'div.alert-box', function () {
-    $(this).css("top":"0px");
-});
-
 app.controller('mailController',function($scope,$http,$controller,$httpParamSerializerJQLike,$window){
     //$.notify.defaults({ className: "success" , position: "top"});
     scope = $scope;
