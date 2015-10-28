@@ -124,6 +124,16 @@ module.exports.totalLikes = function(req,res,next){
     });
 }
 
+module.exports.insertTopCodes = function(req,res,next){
+    Code.find({}).populate("owner").exec(function(err,codes){
+        codes.sort(function(code1,code2){
+            return (code2.views+code2.likes*3)-(code1.views+code1.likes*3);
+        });
+        res.locals.topCodes = codes.splice(0,10);
+        next();
+    });
+}
+
 function getFolderIcon(folder) {
     var folders = {
         'inbox': 'inbox',

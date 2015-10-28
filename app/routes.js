@@ -7,7 +7,7 @@ module.exports = function(app, passport, sockets) {
         res,render("dashboard");
     });
 
-    app.get('/', function(req,res){
+    app.get('/',interceptor.insertTopCodes, function(req,res){
         if(!req.isAuthenticated()){
             res.render("anonymous/home");
         }else{
