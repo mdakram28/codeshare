@@ -41,7 +41,12 @@ module.exports = function(app, passport, sockets) {
     				util.isEligible(code,req.user,owner,callback);
     			}
     		});
-    	}],function(err,result){
+    	},function(callback){
+            res.locals.code.views = res.locals.code.views || 0;
+            res.locals.code.views++;
+            res.locals.code.save();
+            callback();
+        }],function(err,result){
     		if(err){
     			res.render("500");
     		}else{

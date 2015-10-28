@@ -14,7 +14,8 @@ var codeSchema = mongoose.Schema({
         commentor : {type:mongoose.Schema.ObjectId,ref:'User'},
         date_commented : Date,
         content : String
-    }]
+    }],
+    views : Number
 });
 
 module.exports = mongoose.model('Code', codeSchema);

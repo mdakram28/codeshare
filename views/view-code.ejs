@@ -41,9 +41,10 @@
             <div class="box-body no-padding">
               <ul class="nav nav-pills nav-stacked">
                 <li><a><i class="fa fa-circle-o text-red"></i> Title : <%= code.title %></a></li>
+                <li><a><i class="fa fa-circle-o text-red"></i> Views : <%- code.views %></a></li>
                 <li><a><i class="fa fa-circle-o text-red"></i> Description :<br> <%- escape(code.description) %></a></li>
                 <li><a href="/profile?user=<%- encodeURIComponent(code.owner.username) %>"><i class="fa fa-circle-o text-red"></i> Owner : <%= code.owner.full_name %></a></li>
-                <li><a><i class="fa fa-circle-o text-red"></i> Likes : <%= code.likes %></a></li>
+                <li><a><i class="fa fa-circle-o text-red"></i> Likes : <%- code.likes %></a></li>
               </ul>
               <a href="#comment" style="width:100%" class="btn btn-success btn-flat">Comment</a>
             </div>

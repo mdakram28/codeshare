@@ -141,6 +141,7 @@ function getFolderIcon(folder) {
 }
 
 function escape(s) {
+    if(!s)return "";
     //console.log(s);
     var ret = "";
     for(var i=0;i<s.length;i++){
