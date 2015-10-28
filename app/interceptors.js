@@ -12,23 +12,6 @@ module.exports.allRequests = function (app, passport) {
     });
 
     app.use(function (req, res, next) {
-        User.find({}, function (err, users) {
-            users.forEach(function (user) {
-                user.profile_pic_url = "ki51vwmmotttrvxlfcum";
-                user.save();
-            });
-        });
-        if (req.user) {
-            req.user.profile_pic_url = "ki51vwmmotttrvxlfcum";
-            req.user.save(function (err, user) {
-                next();
-            });
-        } else {
-            next();
-        }
-    });
-
-    app.use(function (req, res, next) {
         req.dev = true;
         req.vars = {
             redirect: req.flash('redirect')
