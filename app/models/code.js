@@ -15,7 +15,7 @@ var codeSchema = mongoose.Schema({
         date_commented : Date,
         content : String
     }],
-    views : Number
+    views : {type:Number , default:0}
 });
 
 module.exports = mongoose.model('Code', codeSchema);

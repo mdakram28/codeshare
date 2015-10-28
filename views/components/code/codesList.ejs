@@ -4,15 +4,16 @@
       <% codes.forEach(function(code,index){if(code.match==undefined || code.match==true){ %>
         <tr class="code">
           <td><a href="/profile?user=<%- encodeURIComponent(code.owner.username) %>"><img src="/profile-pic?user=<%- encodeURIComponent(code.owner.username) %>"></a></td>
-          <td><a class="title" href="/code/<%- code.owner.username %>/<%- code.url %>"><h5><%= code.title %></h5></a> </td>
+          <td width="20%"><a class="title" href="/code/<%- code.owner.username %>/<%- code.url %>"><h5><b><%= code.title %></b></h5></a> </td>
           <td><a class="title" href="/profile?user=<%- encodeURIComponent(code.owner.username) %>"><h5><%= code.owner.full_name %></h5></a> </td>
           <td class="visibility"><div><small>(<%= code.visibility %>)</small><div></td>
           <td class="language"><div><%= code.language.capitalize() %></div></td>
           <td class="time"><div class="pull-right"><%= code.date_created %></div></td>
           <td class="likes"><div><i class="fa fa-heart"></i> <%- code.likes %></div></td>
+          <td class="views"><div><i class="fa fa-eye  "></i> <%- code.views %></div></td>
           <% if(req.user && req.user.username == code.owner.username){ %>
-            <td><a href="removeCode?id=<%- code._id.toString() %>&redirect=<%= encodeURIComponent(req.originalUrl) %>" type="button" class="btn btn-danger">Remove Code</a></td>
-            <td><a href="editCode?id=<%- code._id.toString() %>" type="button" class="btn btn-default">Edit</a></td>
+            <td><a href="removeCode?id=<%- code._id.toString() %>&redirect=<%= encodeURIComponent(req.originalUrl) %>" type="button" class="btn btn-danger">Remove Code</a>
+            <a href="editCode?id=<%- code._id.toString() %>" type="button" class="btn btn-default">Edit</a></td>
           <% } %>
         </tr>
       <% }}) %>

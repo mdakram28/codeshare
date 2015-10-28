@@ -433,6 +433,7 @@ module.exports = function(app, passport, sockets) {
                 newCode.likes = 0;
                 newCode.title=title;
                 newCode.url = url;
+                newCode.views = 0;
                 //newCode.comments = [];
                 console.log(newCode);
                 newCode.save(function(err) {

@@ -36,16 +36,16 @@
   margin-top: 11px;
 }
 
-.code a.title{
+/*.code a.title{
   display: inline-block;
-}
+}*/
 
 .code .language div{
   color:grey;
   margin-top: 11px;
 }
 
-.code .likes div{
+.code .likes div , .code .views div{
   display: block;
   margin-top: 11px;
   min-width: 40px;

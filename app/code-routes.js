@@ -99,6 +99,7 @@ module.exports = function(app, passport, sockets) {
                                     case 'fr': code.visibility = "Friends";break;
                                     case 'pt': code.visibility = "Private";break;
                                 }
+                                code.views = code.views || 0;
                                 visibleCodes.push(code);
                                 callback2();
                             }
