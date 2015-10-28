@@ -30,7 +30,7 @@ module.exports = function(app, passport, sockets) {
         read_stream.pipe(writestream);
         
         req.cloudinary.uploader.upload(path, function(result) {
-            req.user.profile_pic_url = result.url;
+            req.user.profile_pic_url = result.public_id;
             req.user.save();
         });
 

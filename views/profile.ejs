@@ -115,7 +115,7 @@
                 <%- include('./components/code/codesList') %>
               </div>
               <!-- /.tab-pane -->
-
+              <% if(me){ %>
               <div class="tab-pane <%- req.query.tab=='settings'?'active':'' %>" id="settings">
                 <form class="form-horizontal" action="/updateUserSettings" method="post">
                   <div class="form-group">
@@ -151,6 +151,7 @@
                   </div>
                 </form>
               </div>
+              <% } %>
               <!-- /.tab-pane -->
             </div>
             <!-- /.tab-content -->
