@@ -32,7 +32,7 @@
           <!-- Profile Image -->
           <div class="box box-primary">
             <div class="box-body box-profile">
-              <div><img class="profile-user-img img-responsive img-circle" src="/profile-pic?user=<%- profile.username %>" alt="User profile picture">
+              <div><img class="profile-user-img img-responsive img-circle" src="<%- cloudinary.url(profile.profile_pic_url) %>" alt="User profile picture">
               <div></div>
               </div>
               

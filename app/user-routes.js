@@ -149,6 +149,7 @@ module.exports = function(app, passport, sockets) {
                     isFriend: isFriend == undefined ? false : isFriend,
                     //match: util.compare(user, search, ["username", "full_name"]),
                     auth: req.isAuthenticated(),
+                    profile_pic_url: user.profile_pic_url,
                     following: req.user.following.indexOf(user._id) >= 0,
                     follower: req.user.followers.indexOf(user._id) >= 0
                 });
@@ -175,6 +176,7 @@ module.exports = function(app, passport, sockets) {
                         full_name: user.full_name,
                         me: isFriend == undefined ? true : false,
                         isFriend: isFriend == undefined ? false : isFriend,
+                        profile_pic_url:user.profile_pic_url,
                         //match: util.compare(user, search, ["username", "full_name"]),
                         auth: req.isAuthenticated(),
                         following: profileUser.following.indexOf(user._id) >= 0,
@@ -215,6 +217,7 @@ module.exports = function(app, passport, sockets) {
                             me: isFriend == undefined ? true : false,
                             isFriend: isFriend == undefined ? false : isFriend,
                             match: util.compare(user, search, ["username", "full_name"]),
+                            profile_pic_url:user.profile_pic_url,
                             auth: req.isAuthenticated(),
                             following: req.user ? req.user.following.indexOf(user._id) >= 0 : false
                         });
@@ -222,7 +225,6 @@ module.exports = function(app, passport, sockets) {
                     res.locals.result_members = members;
                     callback();
                 });
-
             },
             function(callback) {
                 Code.find({}).populate('owner').exec(function(err, codes) {

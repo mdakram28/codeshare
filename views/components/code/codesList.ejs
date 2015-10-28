@@ -3,7 +3,7 @@
     <tbody>
       <% codes.forEach(function(code,index){if(code.match==undefined || code.match==true){ %>
         <tr class="code">
-          <td><a href="/profile?user=<%- encodeURIComponent(code.owner.username) %>"><img src="/profile-pic?user=<%- encodeURIComponent(code.owner.username) %>"></a></td>
+          <td><a href="/profile?user=<%- encodeURIComponent(code.owner.username) %>"><img src="<%- cloudinary.url(code.owner.profile_pic_url) %>"></a></td>
           <td width="20%"><a class="title" href="/code/<%- code.owner.username %>/<%- code.url %>"><h5><b><%= code.title %></b></h5></a> </td>
           <td><a class="title" href="/profile?user=<%- encodeURIComponent(code.owner.username) %>"><h5><%= code.owner.full_name %></h5></a> </td>
           <td class="visibility"><div><small>(<%= code.visibility %>)</small><div></td>

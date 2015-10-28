@@ -43,7 +43,7 @@
                   <tbody>
                     <% result_members.forEach(function(friend,index){ %>
                       <tr class="friend" ng-show="result_members[<%- index %>].match">
-                        <td><a href="/profile?user=<%- friend.username %>"><img src="/profile-pic?user=<%- friend.username %>"></a></td>
+                        <td><a href="/profile?user=<%- friend.username %>"><img src="<%- cloudinary.url(friend.profile_pic_url) %>"></a></td>
                         <td class="full-name"><a href="/profile?user=<%- friend.username %>"><%= friend.full_name %> <span style="color:#BBBBBB"><%= friend.username %></span></a></td>
                         <td ng-show="!(result_members[<%- index %>].me)"><a href="/compose" class="btn btn-default">View Profile</a></td>
                         <td ng-show="!result_members[<%- index %>].isFriend && !(result_members[<%- index %>].me) && auth"><button ng-click="addFriend('<%- index %>')" class="btn btn-success">Add to Contacts</button></td>
@@ -61,7 +61,7 @@
                   <tbody>
                     <% result_members.forEach(function(friend,index){ %>
                       <tr class="friend">
-                        <td><a href="/profile?user=<%- friend.username %>"><img src="/profile-pic?user=<%- friend.username %>"></a></td>
+                        <td><a href="/profile?user=<%- friend.username %>"><img src="<%- cloudinary.url(friend.profile_pic_url) %>"></a></td>
                         <td class="full-name"><a href="/profile?user=<%- friend.username %>"><%= friend.full_name %> <span style="color:#BBBBBB"><%= friend.username %></span></a></td>
                         <td ng-show="!(result_members[<%- index %>].me)"><a href="/compose" class="btn btn-default">View Profile</a></td>
                         <td ng-show="(!result_members[<%- index %>].isFriend) && !(result_members[<%- index %>].me) && auth"><button ng-click="addFriend('<%- index %>')" class="btn btn-success">Add to Contacts</button></td>
