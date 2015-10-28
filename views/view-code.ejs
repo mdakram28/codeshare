@@ -53,7 +53,7 @@
         </div>
         <div class="col-md-8">
           <div class="box">
-            <div class="box-header with-border"><h3 class="box-title">Code</h3>
+            <div class="box-header with-border"><h3 class="box-title">Code</h3><a style="margin-left:20px" class="btn btn-primary btn-flat" onClick="showCopyDialog()">Copy</a>
               <div class=" box-tools pull-right">
                 <div class="btn-group like">
                   <% if(req.isAuthenticated()){ %>
@@ -158,6 +158,9 @@ function controller($scope,$http){
   app.controller('mailController',function($scope,$http){
     controller($scope,$http);
   });
+  function showCopyDialog(){
+    window.prompt("Copy to clipboard: Ctrl+C, Enter", editor.getValue());
+  }
   </script>
 <% } %>
 
