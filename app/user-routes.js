@@ -28,6 +28,11 @@ module.exports = function(app, passport, sockets) {
             filename: req.user.usernames
         });
         read_stream.pipe(writestream);
+        
+        req.cloudinary.uploader.upload(path, function(result) {
+            req.user.profile_pic_url = result.url;
+            req.user.save();
+        });
 
         res.redirect('/');
     });

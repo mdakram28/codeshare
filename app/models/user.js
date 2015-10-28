@@ -22,7 +22,8 @@ var userSchema = mongoose.Schema({
     }],
     codesLiked: [{type: mongoose.Schema.ObjectId, ref: 'Code'}],
     followers: [{type: mongoose.Schema.ObjectId, ref: 'User'}],
-    following: [{type: mongoose.Schema.ObjectId, ref: 'User'}]
+    following: [{type: mongoose.Schema.ObjectId, ref: 'User'}],
+    profile_pic_url: {type:String , default:"http://res.cloudinary.com/mdakram28/image/upload/v1446041733/ki51vwmmotttrvxlfcum.png"}
 });
 
 userSchema.pre("save", function(next) {
