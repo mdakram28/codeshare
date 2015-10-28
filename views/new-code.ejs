@@ -38,7 +38,7 @@
           <div class="box">
             <div class="box-header with-border">Code</div>
             <div class="box-body">
-              <div id="editor"><% if(code){ %><%- code.content %>
+              <div id="editor"><% if(code){ %><%- code.content.split("<").join("<span><</span>") %>
 <% }else{ %>
 #sample python 3.0 code
 #write your code here
@@ -154,7 +154,11 @@ langSelector.change(function(ev){
          })
       .success(function(data) {
         if(data.success){
-          $('#codeUrlModal').modal('show');
+          if(!formdata.id){
+            $('#codeUrlModal').modal('show');
+          }else{
+          $.notify("code saved");
+          }
         }else{
           if(data.message=='' || data.message==undefined){
             $.notify("Unable to save code", "error");

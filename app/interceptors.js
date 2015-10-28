@@ -33,6 +33,7 @@ module.exports.allRequests = function(app, passport){
         res.locals.notifs = [];
         res.locals.notifs_unread = 0;
         res.locals.active = '';
+        res.locals.util = require("./util.js");
 
         req.isAdmin = req.isAuthenticated() && req.user.username=="mdakram28";
         next();

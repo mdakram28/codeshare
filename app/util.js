@@ -288,3 +288,7 @@ module.exports.validateSignupFields = function(username,full_name,email,password
 
     return '';
 }
+
+module.exports.mapString = function(s,map){
+    
+}

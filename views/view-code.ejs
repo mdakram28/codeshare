@@ -65,7 +65,7 @@
               </div>
             </div>
             <div class="box-body">
-              <div id="editor"><%- code.content %></div>
+              <div id="editor"><%- code.content.split("<").join("<span><</span>") %></div>
             </div>
             <div class="box-footer">
               <% code.comments.forEach(function(comment){ %>
