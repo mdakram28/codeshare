@@ -36,9 +36,19 @@
   margin-top: 11px;
 }
 
-/*.code a.title{
-  display: inline-block;
-}*/
+@media (max-width: 768px){
+  .content-wrapper{
+    padding-top: 50px;
+  }
+  
+  .jumbotron{
+    height: 460px !important;
+  }
+  
+  div.bg{
+    height:250px !important;
+  }
+}
 
 .code .language div{
   color:grey;

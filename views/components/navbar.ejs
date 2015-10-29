@@ -17,16 +17,7 @@
       </a>
 
 
-      <form class="navbar-form navbar-left" role="search" action="/search" method="get">
-        <div class="input-group form-group">
-          <input type="text" value="<%- req.query.q %>" class="form-control" id="navbar-search-input" style="width:500px" name="q" placeholder="Search">
-            <span class="input-group-btn">
-              <button type="submit" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
-              </button>
-            </span>
-        </div>
-        <input type="hidden" value="codes" name="tab">
-      </form>
+      
 
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
@@ -121,5 +112,16 @@
           <li><a href="/logout?redirect=<%= encodeURIComponent(req.originalUrl) %>"><i class="fa fa-sign-out"></i></a></li>
         </ul>
       </div>
+      
+      <form class="navbar-form navbar-left" role="search" action="/search" method="get">
+        <div class="input-group form-group">
+          <input type="text" value="<%- req.query.q %>" class="form-control" id="navbar-search-input" style="width:500px" name="q" placeholder="Search">
+            <span class="input-group-btn">
+              <button type="submit" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+              </button>
+            </span>
+        </div>
+        <input type="hidden" value="codes" name="tab">
+      </form>
     </nav>
   </header>

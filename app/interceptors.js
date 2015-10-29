@@ -29,6 +29,7 @@ module.exports.allRequests = function (app, passport) {
         }
         req.local = res.locals.local = process.env.PORT == undefined;
         res.locals.escape = escape;
+        res.locals.style="";
         req.cloudinary = cloudinary;
         res.locals.cloudinary = cloudinary;
         res.locals.req = req;

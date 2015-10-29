@@ -41,7 +41,7 @@
       </div>
       <br>
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
           <div class="box box-solid">
             <div class="box-header with-border">
               <h3 class="box-title">Notifications</h3>
@@ -59,7 +59,21 @@
             <!-- /.box-body -->
           </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-5">
+          <div class="box box-solid">
+            <div class="box-header with-border">
+              <h3 class="box-title">Trending codes</h3>
+
+              <div class="box-tools">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <%- include('./components/code/topCodes',{style:"max-height: 450px;overflow-x: scroll;"}) %>
+            <!-- /.box-body -->
+          </div>
+        </div>
+        <div class="col-md-3">
           <div class="box box-solid">
             <div class="box-header with-border">
               <h3 class="box-title">Leaderboard</h3> <span class="text-primary"><% if(req.isAuthenticated()){ %>( your rank : <% leaderboard.forEach(function(leader,index){if(leader.username==user.username){ %><%= index+1 %><% }}) %> )<% } %></span>
@@ -104,6 +118,10 @@
   app.controller('mailController2',function($scope,$http){
     
   });
+  
+  $(".top-codes").slimscroll({
+    height:410
+  }).css("overflow-x","auto");
 </script>
 </body>
 </html>
