@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<%- include('components/header',{title:'Search results',includes:[]}) %>
+<%- include('components/header',{title:'CODEBook : Users list',includes:[]}) %>
 
 </head>
 <% if(!req.isAuthenticated()){ %>
@@ -37,11 +37,11 @@
               <div class="box-body table-responsive no-padding">
                 <table class="table table-hover">
                   <tbody>
-                    <% users.forEach(function(user,index){ if(user.following){ %>
+                    <% users.forEach(function(friend,index){ if(friend.following){ %>
                       <tr class="friend">
-                        <td><a href="/profile?user=<%- user.username %>"><img src="/profile-pic?user=<%- user.username %>"></a></td>
-                        <td class="full-name"><a href="/profile?user=<%- user.username %>"><%= user.full_name %> <span style="color:#BBBBBB"><%= user.username %></span></a></td>
-                        <td><a href="/profile?user=<%- encodeURIComponent(user.username) %>" class="btn btn-default">View Profile</a></td>
+                        <td><a href="/profile?user=<%- encodeURIComponent(friend.username) %>"><img src="<%- cloudinary.url(friend.profile_pic_url) %>"></a></td>
+                        <td class="full-name"><a href="/profile?user=<%- encodeURIComponent(friend.username) %>"><%= friend.full_name %> <span style="color:#BBBBBB"><%= friend.username %></span></a></td>
+                        <td><a href="/profile?user=<%- encodeURIComponent(friend.username) %>" class="btn btn-default">View Profile</a></td>
                       </tr>
                     <% }}) %>
                   </tbody>
@@ -52,11 +52,11 @@
               <div class="box-body table-responsive no-padding">
                 <table class="table table-hover">
                   <tbody>
-                    <% users.forEach(function(user,index){ if(user.follower){ %>
+                    <% users.forEach(function(friend,index){ if(friend.follower){ %>
                       <tr class="friend">
-                        <td><a href="/profile?user=<%- user.username %>"><img src="/profile-pic?user=<%- user.username %>"></a></td>
-                        <td class="full-name"><a href="/profile?user=<%- user.username %>"><%= user.full_name %> <span style="color:#BBBBBB"><%= user.username %></span></a></td>
-                        <td><a href="/profile?user=<%- encodeURIComponent(user.username) %>" class="btn btn-default">View Profile</a></td>
+                        <td><a href="/profile?user=<%- encodeURIComponent(friend.username) %>"><img src="<%- cloudinary.url(friend.profile_pic_url) %>"></a></td>
+                        <td class="full-name"><a href="/profile?user=<%- encodeURIComponent(friend.username) %>"><%= friend.full_name %> <span style="color:#BBBBBB"><%= friend.username %></span></a></td>
+                        <td><a href="/profile?user=<%- encodeURIComponent(friend.username) %>" class="btn btn-default">View Profile</a></td>
                       </tr>
                     <% }}) %>
                   </tbody>

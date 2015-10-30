@@ -2,9 +2,9 @@
     <!-- Logo -->
     <a href="/" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>CO</b>S</span>
+      <span class="logo-mini"><b>CO</b>B</span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>CODE</b>Share</span>
+      <span class="logo-lg"><b>CODE</b>Book</span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top" role="navigation">
@@ -36,7 +36,7 @@
                   <li ng-repeat="mail in mails"><!-- start message -->
                     <a href="/mail?id={{mail._mail._id}}">
                       <div class="pull-left">
-                        <img ng-src="/profile-pic?user={{mail._sender.username}}" class="img-circle" alt="User Image">
+                        <img ng-src="{{mail._sender.profile_pic_url_complete}}" class="img-circle" alt="User Image">
                       </div>
                       <h4>
                         {{mail._sender.full_name}}
@@ -90,7 +90,7 @@
                     <a href="/users/<%- encodeURIComponent(user.username) %>/followers">Followers</a>
                   </div>
                   <div class="col-xs-4 text-center">
-                    <a href="/users/<%- encodeURIComponent(user.username) %>/following">Sales</a>
+                    <a href="/users/<%- encodeURIComponent(user.username) %>/following">Following</a>
                   </div>
                   <div class="col-xs-4 text-center">
                     <a href="/friends">Friends</a>

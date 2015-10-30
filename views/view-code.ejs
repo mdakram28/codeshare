@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<%- include('components/header',{title:code.title+' - CODEShare',includes:[]}) %>
+<%- include('components/header',{title:code.title+' - CODEBook',includes:[]}) %>
 </head>
 
 <% if(!req.isAuthenticated()){ %>
@@ -72,7 +72,7 @@
               <% code.comments.forEach(function(comment){ %>
               <div class="row">
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                  <a href="/profile?user=<%- comment.commentor.username %>"><img style="height:70px;" src="/profile-pic?user=<%- comment.commentor.username %>"></a>
+                  <a href="/profile?user=<%- comment.commentor.username %>"><img style="height:70px;" src="<%- cloudinary.url(comment.commentor.profile_pic_url) %>"></a>
                 </div>
                 <div class="col-xs-11 col-sm-11 col-md-11 col-lg-11">
                   <div style="padding-left:10px;"><a href="/profile?user=<%- comment.commentor.username %>" ><strong><%= comment.commentor.full_name %></strong></a> <%= comment.content %></div>
@@ -82,7 +82,7 @@
               <% }) %>
               <% if (req.isAuthenticated()){ %>
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                  <img src="/profile-pic" style="width:60px;border:1px solid grey">
+                  <img src="<%- cloudinary.url(user.profile_pic_url) %>" style="width:60px;border:1px solid grey">
                 </div>
                 <div id="comment" class="col-xs-11 col-sm-11 col-md-11 col-lg-11" style="padding-bottom:5px;">
                   <form method="post" action="/postComment?redirect=<%= encodeURIComponent(req.originalUrl) %>">
@@ -105,6 +105,22 @@
   <%- include('components/footer') %>
   
 </div>
+
+<div class="modal" id="copyDialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>COPY</h3> Press Ctrl + c to copy and close the dialog
+        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button> 
+      </div>
+      <div class="modal-body">
+        <textarea id="codeCopyTextarea" class="form-control" rows="10" placeholder="CODE AREA"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
 <%- include('components/footer-scripts',{includes:['slimscroll','fastclick','app','demo','script-mails','ace']}) %>
 
 <script type="text/javascript">
@@ -123,8 +139,13 @@ function controller($scope,$http){
 }
 </script>
 
+<script>
+  function showCopyDialog(){
+    //window.prompt("Copy to clipboard: Ctrl+C, Enter", editor.getValue());
+    $("#copyDialog").modal("show");
+    $("#codeCopyTextarea").val(editor.getValue()).select();
+  }
 <% if(req.isAuthenticated()){ %>
-  <script>
   app.controller('mailController2',function($scope,$http,$httpParamSerializerJQLike){
     controller($scope,$http);
     $scope.liked = <%- liked.toString() %>;
@@ -153,14 +174,10 @@ function controller($scope,$http){
   });
   </script>
 <% }else{ %>
-  <script>
   var app = angular.module('mailApp',[]);
   app.controller('mailController',function($scope,$http){
     controller($scope,$http);
   });
-  function showCopyDialog(){
-    window.prompt("Copy to clipboard: Ctrl+C, Enter", editor.getValue());
-  }
   </script>
 <% } %>
 

@@ -10,7 +10,7 @@ var config = require("../config/code.js");
 
 module.exports = function(app, passport, sockets) {
 
-    app.get('/code/:username/:codeUrl',function(req,res){
+    app.get('/code/:username/:codeUrl', interceptor.track,function(req,res){
     	var owner;
     	async.series([function(callback){
     		User.findOne({username:req.params.username},function(err,user){
@@ -55,13 +55,13 @@ module.exports = function(app, passport, sockets) {
     	});
     });
     
-    app.get('/newcode', interceptor.isLoggedIn, function(req,res){
+    app.get('/newcode', interceptor.isLoggedIn, interceptor.track, function(req,res){
     	res.locals.languages = config.languages;
         res.locals.code = undefined;
         res.render('new-code');
     });
 
-    app.get('/editCode',interceptor.isLoggedIn,function(req,res){
+    app.get('/editCode',interceptor.isLoggedIn, interceptor.track,function(req,res){
         if(!req.query.id)return res.render("500");
         Code.findOne({_id:req.query.id,owner:req.user._id},function(err,code){
             if(err || !code)return res.render("500");
@@ -71,7 +71,7 @@ module.exports = function(app, passport, sockets) {
         });
     });
 
-    app.get('/codes', function(req,res){
+    app.get('/codes', interceptor.track, function(req,res){
         var username = req.query.user;
         if(req.user){
             username = req.query.user || req.user.username;
@@ -118,7 +118,7 @@ module.exports = function(app, passport, sockets) {
         })
     });
 
-    app.get('/removeCode',function(req,res){
+    app.get('/removeCode', interceptor.track,function(req,res){
         var end = function(){require("./redirect-handler.js")(req, res);}
         if(req.isAuthenticated()){
             var id = req.query.id;
@@ -136,7 +136,7 @@ module.exports = function(app, passport, sockets) {
         }
     });
 
-    app.post('/postComment',function(req,res){
+    app.post('/postComment', interceptor.track,function(req,res){
         var end = function(){require("./redirect-handler.js")(req, res);}
         if(req.isAuthenticated()){
             req.body.content = req.body.content || '';

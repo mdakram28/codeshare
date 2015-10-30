@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<%- include('components/header',{title:'Profile'}) %>
+<%- include('components/header',{title:'Profile : '+profile.username}) %>
 </head>
 <% if(!req.isAuthenticated()){ %>
   <body class="skin-blue layout-top-nav" ng-app="mailApp" ng-controller="mailController" ng-cloak>
@@ -40,10 +40,10 @@
 
               <ul class="list-group list-group-unbordered">
                 <li class="list-group-item">
-                  <b><a href="/users/<%- encodeURIComponent(profile.username) %>/followers">Followers</a></b> <a class="pull-right"><%= profile.followers.length %></a>
+                  <b><a href="/users/<%- encodeURIComponent(profile.username) %>/followers">Followers</a></b> <a class="pull-right"><%- profile.followers.length %></a>
                 </li>
                 <li class="list-group-item">
-                  <b><a href="/users/<%- encodeURIComponent(profile.username) %>/following">Following</a></b> <a class="pull-right"><%= profile.following.length %></a>
+                  <b><a href="/users/<%- encodeURIComponent(profile.username) %>/following">Following</a></b> <a class="pull-right"><%- profile.following.length %></a>
                 </li>
                 <li class="list-group-item">
                   <b>Friends</b> <a class="pull-right"><%= profile.friends.length %></a>

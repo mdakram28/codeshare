@@ -8,16 +8,16 @@ var async = require("async");
 var interceptor = require("./interceptors.js");
 var util = require("./util.js");
 
-module.exports = function(app, passport, sockets) {
+module.exports = function (app, passport, sockets) {
 
-    app.get('/api/readNotifications', interceptor.isLoggedInAPI, function(req, res) {
+    app.get('/api/readNotifications', interceptor.isLoggedInAPI, interceptor.track, function (req, res) {
         Notification.find({
             owner: req.user._id
-        }, function(err, notifs) {
+        }, function (err, notifs) {
             if (err || !notifs) return res.send({
                 success: false
             });
-            notifs.forEach(function(notif) {
+            notifs.forEach(function (notif) {
                 notif.read = true;
                 notif.save();
             });
@@ -27,13 +27,13 @@ module.exports = function(app, passport, sockets) {
         });
     });
 
-    app.get('/api/mails', function(req, res) {
+    app.get('/api/mails', interceptor.track, function (req, res) {
         var folder = req.query.folder;
         var offset = !req.query.off ? 0 : req.query.off;
         var limit = !req.query.lim ? 20 : req.query.lim;
         var unread = 0;
         async.series([
-            function(callback) {
+            function (callback) {
                 if (req.user.folders.indexOf(folder) == -1) {
                     callback(new Error('folder name not present'));
                 } else {
@@ -41,30 +41,31 @@ module.exports = function(app, passport, sockets) {
                     callback();
                 }
             },
-            function(callback) {
+            function (callback) {
                 var ret = [];
                 User.findOne({
                     _id: req.user._id
-                }).populate('mails._mail').exec(function(err, mailsUser) {
+                }).populate('mails._mail').exec(function (err, mailsUser) {
                     if (err) {
                         callback(err);
                     }
                     //console.log(mailsUser);
                     var i = 0;
-                    async.each(mailsUser.mails, function(mail, callback2) {
+                    async.each(mailsUser.mails, function (mail, callback2) {
                         //console.log(mail._sender);
                         if (!mail.read) unread++;
                         if (mail.folder_name == folder) {
                             User.findOne({
                                 _id: mail._mail._sender
-                            }, function(err, sender) {
+                            }, function (err, sender) {
                                 if (err) {
                                     callback2(err);
                                 } else {
                                     mail._sender = {
                                         username: sender.username,
-                                        full_name: sender.full_name
+                                        full_name: sender.full_name,
                                     };
+                                    mail._sender._doc._sender.profile_pic_url_complete = req.cloudinary.url(sender.profile_pic_url);
                                     mail._mail.content = mail._mail.content.length > 41 ? mail._mail.content.substring(0, 41) : mail._mail.content;
                                     ret.push(mail);
                                     callback2();
@@ -73,7 +74,7 @@ module.exports = function(app, passport, sockets) {
                         } else {
                             callback2();
                         }
-                    }, function(err, result) {
+                    }, function (err, result) {
                         if (err) {
                             callback(err);
                         } else {
@@ -82,7 +83,7 @@ module.exports = function(app, passport, sockets) {
                     })
                 });
             }
-        ], function(err, result) {
+        ], function (err, result) {
             if (err) {
                 return res.json(JSON.stringify({
                     success: false,
@@ -98,7 +99,7 @@ module.exports = function(app, passport, sockets) {
         })
     });
 
-    app.post('/api/sendmail', interceptor.isLoggedInAPI, function(req, res) {
+    app.post('/api/sendmail', interceptor.isLoggedInAPI, interceptor.track, function (req, res) {
         //console.log(req.body.to);
         var to = req.body.to;
         var subject = req.body.subject;
@@ -116,29 +117,29 @@ module.exports = function(app, passport, sockets) {
 
         var newMail = new Mail();
         var receiver_id = [];
-        async.series([function(callback) {
-                newMail.content = content;
-                newMail.subject = subject;
-                newMail.read = false;
-                newMail._sender = req.user._id;
-                newMail.date_sent = new Date();
-                newMail.save(function(err, mail) {
-                    if (err) {
-                        callback(err);
-                    } else {
-                        newMail._id = mail._id;
-                        callback();
-                    }
-                });
-            },
-            function(callback) {
+        async.series([function (callback) {
+            newMail.content = content;
+            newMail.subject = subject;
+            newMail.read = false;
+            newMail._sender = req.user._id;
+            newMail.date_sent = new Date();
+            newMail.save(function (err, mail) {
+                if (err) {
+                    callback(err);
+                } else {
+                    newMail._id = mail._id;
+                    callback();
+                }
+            });
+        },
+            function (callback) {
                 var total = 0;
                 var done = 0;
-                to.forEach(function(friend, i) {
+                to.forEach(function (friend, i) {
                     total++;
                     User.findOne({
                         username: to[i]
-                    }, function(err, receiver) {
+                    }, function (err, receiver) {
                         if (err) {
                             callback(err);
                         } else if (!receiver) {
@@ -150,7 +151,7 @@ module.exports = function(app, passport, sockets) {
                                 folder_name: folder,
                                 read: folder != 'inbox'
                             });
-                            receiver.save(function(err) {
+                            receiver.save(function (err) {
                                 if (err) {
                                     callback(err);
                                 } else {
@@ -165,7 +166,7 @@ module.exports = function(app, passport, sockets) {
                     });
                 });
             },
-            function(callback) {
+            function (callback) {
                 if (folder != 'inbox') return callback();
                 receiver_id.push(req.user._id);
                 req.user.mails.push({
@@ -175,10 +176,10 @@ module.exports = function(app, passport, sockets) {
                 });
                 req.user.save(callback);
             },
-            function(callback) {
+            function (callback) {
                 Mail.findOne({
                     _id: newMail._id
-                }, function(err, mail) {
+                }, function (err, mail) {
                     if (err) {
                         callback(err);
                     } else if (!mail) {
@@ -189,7 +190,7 @@ module.exports = function(app, passport, sockets) {
                     }
                 });
             }
-        ], function(err, result) {
+        ], function (err, result) {
             if (err) {
                 return res.json({
                     success: false
@@ -204,17 +205,17 @@ module.exports = function(app, passport, sockets) {
         //console.log(req.body);
     });
 
-    app.get('/api/unreadMails', interceptor.isLoggedInAPI, function(req, res) {
+    app.get('/api/unreadMails', interceptor.isLoggedInAPI, interceptor.track, function (req, res) {
         var folders = {};
         var allMails = {};
-        req.user.folders.forEach(function(folder) {
+        req.user.folders.forEach(function (folder) {
             folders[folder] = 0;
             allMails[folder] = 0;
         });
         // var counted = 0;
         // var total = req.user.mails.length;
         var errors = [];
-        req.user.mails.forEach(function(mail) {
+        req.user.mails.forEach(function (mail) {
             // util.getObject(mail._mail, Mail, function(err, response) {
             //     console.log(response);
             //     if (err) {
@@ -250,10 +251,10 @@ module.exports = function(app, passport, sockets) {
         })
     });
     // add friend
-    app.get('/api/addFriend', interceptor.isLoggedInAPI, function(req, res) {
+    app.get('/api/addFriend', interceptor.isLoggedInAPI, interceptor.track, function (req, res) {
         User.findOne({
             username: req.query.user
-        }, function(err, friend) {
+        }, function (err, friend) {
             if (err) {
                 res.send(500);
             } else if (!friend) {
@@ -266,8 +267,8 @@ module.exports = function(app, passport, sockets) {
                     })
                 }
                 req.user.friends.push(friend._id);
-                util.createNotification(friend,"added-as-contact",{username:req.user.username,full_name:req.user.full_name});
-                req.user.save(function(err) {
+                util.createNotification(friend, "added-as-contact", { username: req.user.username, full_name: req.user.full_name });
+                req.user.save(function (err) {
                     if (err) {
                         res.send(500);
                     } else {
@@ -280,10 +281,10 @@ module.exports = function(app, passport, sockets) {
         })
     });
 
-    app.get('/api/removeFriend', interceptor.isLoggedInAPI, function(req, res) {
+    app.get('/api/removeFriend', interceptor.isLoggedInAPI, interceptor.track, function (req, res) {
         User.findOne({
             username: req.query.user
-        }, function(err, friend) {
+        }, function (err, friend) {
             if (err) {
                 res.send(500);
             } else if (!friend) {
@@ -295,20 +296,20 @@ module.exports = function(app, passport, sockets) {
                         error: "not friend"
                     })
                 }
-                req.user.friends.forEach(function(friend2, index) {
+                req.user.friends.forEach(function (friend2, index) {
                     if (friend2.toString() == friend._id.toString()) {
                         util.deleteAt(req.user.friends, index);
                         //console.log(req.user.friends);
                     }
                 });
-                req.user.save(function(err) {
+                req.user.save(function (err) {
                     if (err) {
                         res.json({
                             success: false,
                             error: "Unknown"
                         });
                     } else {
-                        util.createNotification(friend,"removed-friend",{username:req.user.username,full_name:req.user.full_name});
+                        util.createNotification(friend, "removed-friend", { username: req.user.username, full_name: req.user.full_name });
                         res.json({
                             success: true
                         });
@@ -318,7 +319,7 @@ module.exports = function(app, passport, sockets) {
         })
     });
 
-    app.get('/api/moveToFolder', interceptor.isLoggedIn, function(req, res) {
+    app.get('/api/moveToFolder', interceptor.isLoggedIn, interceptor.track, function (req, res) {
         if (!req.query.mail || !req.query.dest || req.user.folders.indexOf(req.query.dest) == -1) {
             if (req.query.dest != 'permanentDelete') {
                 return res.json({
@@ -327,13 +328,13 @@ module.exports = function(app, passport, sockets) {
             }
         }
         var done = false;
-        req.user.mails.forEach(function(mail, index) {
+        req.user.mails.forEach(function (mail, index) {
             if (mail._mail.toString() == req.query.mail) {
                 if (req.query.dest == 'permanentDelete') {
                     req.user.mails.pull({
                         _id: mail._id
                     });
-                    req.user.save(function(err) {
+                    req.user.save(function (err) {
                         if (done) return;
                         done = true;
                         if (err) {
@@ -348,7 +349,7 @@ module.exports = function(app, passport, sockets) {
                     });
                 } else if (mail.folder_name != req.query.dest) {
                     mail.folder_name = req.query.dest;
-                    req.user.save(function(err) {
+                    req.user.save(function (err) {
                         if (done) return;
                         done = true;
                         if (err) {
@@ -366,7 +367,7 @@ module.exports = function(app, passport, sockets) {
         });
     });
 
-    app.get('/api/isActive', function(req, res) {
+    app.get('/api/isActive', interceptor.track, function (req, res) {
         if (req.isAuthenticated()) {
             res.json({
                 success: true
@@ -378,7 +379,7 @@ module.exports = function(app, passport, sockets) {
         }
     });
 
-    app.post('/api/addCode', interceptor.isLoggedInAPI, function(req, res) {
+    app.post('/api/addCode', interceptor.isLoggedInAPI, interceptor.track, function (req, res) {
         var title = req.body.title || '';
         var url = req.body.url || '';
         var desc = req.body.description || '';
@@ -390,39 +391,39 @@ module.exports = function(app, passport, sockets) {
         var code;
 
         async.series([
-            function(callback) {
-                if(title=='' || url=='' || lang=='' || visib==''){
+            function (callback) {
+                if (title == '' || url == '' || lang == '' || visib == '') {
                     //console.log(req.body);
                     callback(new Error('Unknown error occurred while sendng data'));
-                }else{
+                } else {
                     callback();
                 }
-            },function(callback){
-                Code.find({owner:req.user._id,url:url},function(err,code){
-                    if(err)return callback(err);
-                    if(code.length>0){
+            }, function (callback) {
+                Code.find({ owner: req.user._id, url: url }, function (err, code) {
+                    if (err) return callback(err);
+                    if (code.length > 0) {
                         //console.log(code[0]._id + " : " +req.body.id );
-                        if(req.body.id==code[0]._id)return callback();
+                        if (req.body.id == code[0]._id) return callback();
                         message = "The requested url already exists please choose a diifferent one.";
                         callback(new Error(message));
-                    }else{
+                    } else {
                         callback();
                     }
                 });
-            },function(callback){
+            }, function (callback) {
                 var newCode = new Code();
                 code = newCode;
-                if(req.body.id){
-                    Code.findOne({_id:req.body.id,owner:req.user._id},function(err,prevCode){
-                        if(err || !prevCode)return callback(new Erro("Tampered id"));
+                if (req.body.id) {
+                    Code.findOne({ _id: req.body.id, owner: req.user._id }, function (err, prevCode) {
+                        if (err || !prevCode) return callback(new Erro("Tampered id"));
                         code = prevCode;
                         callback();
                     });
-                }else{
+                } else {
                     callback();
                 }
             },
-            function(callback) {
+            function (callback) {
                 var newCode = code;
                 newCode.owner = req.user._id;
                 newCode.description = desc;
@@ -431,12 +432,12 @@ module.exports = function(app, passport, sockets) {
                 newCode.date_created = new Date();
                 newCode.visibility = visib;
                 newCode.likes = 0;
-                newCode.title=title;
+                newCode.title = title;
                 newCode.url = url;
                 newCode.views = 0;
                 //newCode.comments = [];
                 console.log(newCode);
-                newCode.save(function(err) {
+                newCode.save(function (err) {
                     if (err) {
                         callback(err);
                     } else {
@@ -444,52 +445,52 @@ module.exports = function(app, passport, sockets) {
                     }
                 });
             }
-        ], function(err, result) {
+        ], function (err, result) {
             if (err) {
                 res.json({
                     success: false,
-                    message:message
+                    message: message
                 });
             } else {
 
                 util.logActivity(req, req.user, {
                     code: code._id
-                }, "pb", 'new-code', function(err) {
+                }, "pb", 'new-code', function (err) {
                     if (err) {
                         res.json({
                             success: false,
-                            message:message
+                            message: message
                         });
                     } else {
                         if (!req.isAdmin) {
-                            req.user.followers.forEach(function(follower) {
+                            req.user.followers.forEach(function (follower) {
                                 util.createNotification({
                                     _id: follower
                                 }, "following-new-code", {
-                                    username: req.user.username,
-                                    full_name: req.user.full_name,
-                                    code_url: code.url,
-                                    code_title: code.title
-                                });
-                            });
-                        } else {
-                            User.find({}, function(err, users) {
-                                users.forEach(function(follower) {
-                                    follower = follower._id;
-                                    util.createNotification({
-                                        _id: follower
-                                    }, "following-new-code", {
                                         username: req.user.username,
                                         full_name: req.user.full_name,
                                         code_url: code.url,
                                         code_title: code.title
                                     });
+                            });
+                        } else {
+                            User.find({}, function (err, users) {
+                                users.forEach(function (follower) {
+                                    follower = follower._id;
+                                    util.createNotification({
+                                        _id: follower
+                                    }, "following-new-code", {
+                                            username: req.user.username,
+                                            full_name: req.user.full_name,
+                                            code_url: code.url,
+                                            code_title: code.title
+                                        });
                                 });
                             });
                         }
                         res.json({
                             success: true,
-                            message:message
+                            message: message
                         });
                     }
                 });
@@ -497,7 +498,7 @@ module.exports = function(app, passport, sockets) {
         });
     });
 
-    app.post('/api/likeCode', interceptor.isLoggedInAPI, function(req, res) {
+    app.post('/api/likeCode', interceptor.isLoggedInAPI, interceptor.track, function (req, res) {
         if (!req.body.codeId || req.body.like == undefined) return res.send(500);
         req.body.like = req.body.like == "true";
 
@@ -505,7 +506,7 @@ module.exports = function(app, passport, sockets) {
 
         Code.findOne({
             _id: req.body.codeId
-        }).populate('owner').exec(function(err, code) {
+        }).populate('owner').exec(function (err, code) {
             if (err) {
                 return res.json({
                     success: false
@@ -519,7 +520,7 @@ module.exports = function(app, passport, sockets) {
             }
             if (liked) {
                 var index = -1;
-                req.user.codesLiked.forEach(function(likedCode, i) {
+                req.user.codesLiked.forEach(function (likedCode, i) {
                     if (likedCode.toString() == code._id) {
                         index = i;
                     }
@@ -530,21 +531,21 @@ module.exports = function(app, passport, sockets) {
                 req.user.codesLiked.push(code._id);
             }
 
-            req.user.save(function(err) {
+            req.user.save(function (err) {
                 if (err) {
                     return res.json({
                         success: false
                     });
                 } else {
                     code.likes += liked ? -1 : 1;
-                    code.save(function(err) {
+                    code.save(function (err) {
                         if (err) {
                             return res.json({
                                 success: false
                             });
                         } else {
-                            Notification.remove({owner:code.owner._id,type:'code-liked','content.code_id':code._id},function(){});
-                            util.createNotification(code.owner,"code-liked",{username:code.owner.username,code_id:code._id,likes:code.likes,title:code.title,code_url:code.url});
+                            Notification.remove({ owner: code.owner._id, type: 'code-liked', 'content.code_id': code._id }, function () { });
+                            util.createNotification(code.owner, "code-liked", { username: code.owner.username, code_id: code._id, likes: code.likes, title: code.title, code_url: code.url });
                             return res.json({
                                 success: true
                             });

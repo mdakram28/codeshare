@@ -3,11 +3,11 @@ var interceptor = require("./interceptors.js");
 
 module.exports = function(app, passport, sockets) {
 
-    app.get('/dashboard', interceptor.isLoggedIn, interceptor.totalLikes ,function(req, res) {
+    app.get('/dashboard', interceptor.isLoggedIn, interceptor.track, interceptor.totalLikes ,function(req, res) {
         res,render("dashboard");
     });
 
-    app.get('/',interceptor.insertTopCodes, function(req,res){
+    app.get('/',interceptor.insertTopCodes, interceptor.track, function(req,res){
         if(!req.isAuthenticated()){
             res.render("anonymous/home");
         }else{
@@ -17,11 +17,11 @@ module.exports = function(app, passport, sockets) {
         }
     });
 
-    app.get("/home",function(req,res){
+    app.get("/home", interceptor.track,function(req,res){
         res.render("anonymous/home");
     });
 
-    app.get('/login', function(req, res) {
+    app.get('/login', interceptor.track, function(req, res) {
         /*var redir = '/';
         
         if(req.redir!=undefined){
@@ -34,13 +34,13 @@ module.exports = function(app, passport, sockets) {
         });
     });
 
-    app.post('/login', passport.authenticate('local-login', {
+    app.post('/login', interceptor.track, passport.authenticate('local-login', {
         failureRedirect: '/login'
     }), function(req, res) {
         require("./redirect-handler.js")(req, res);
     });
     
-    app.get('/logout',function(req, res) {
+    app.get('/logout', interceptor.track,function(req, res) {
         if(req.user!=undefined){
             sockets.notifyLogout(req.user);
         }
@@ -49,7 +49,7 @@ module.exports = function(app, passport, sockets) {
         require("./redirect-handler.js")(req, res);
     });
 
-    app.get('/register', function(req, res) {        
+    app.get('/register', interceptor.track, function(req, res) {        
         
         res.render('register.ejs', {
             message: req.flash('signupMessage'),
@@ -60,7 +60,7 @@ module.exports = function(app, passport, sockets) {
         });
     });
 
-    app.post('/register', passport.authenticate('local-signup', {
+    app.post('/register', interceptor.track, passport.authenticate('local-signup', {
         failureRedirect: '/register',
         failureFlash: true
     }),function(req,res){
@@ -68,7 +68,7 @@ module.exports = function(app, passport, sockets) {
     });
 
 
-    app.get('/logout', function(req, res) {
+    app.get('/logout', interceptor.track, function(req, res) {
         req.logout();
         require("./redirect-handler.js")(req,res);
     });

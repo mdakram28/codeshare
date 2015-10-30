@@ -3,8 +3,12 @@ var Notification = require('./models/notification.js');
 var User = require('./models/user.js');
 var Code = require('./models/code.js');
 var cloudinary = require("cloudinary");
+var tracker = require("./tracker.js");
 
 module.exports.allRequests = function (app, passport) {
+    
+    app.use(tracker.intercept);
+    
     cloudinary.config({
         cloud_name: 'mdakram28',
         api_key: '987147464891958',
@@ -174,3 +178,5 @@ function escape(s) {
     }
     return ret;
 }
+
+module.exports.track = tracker.intercept;

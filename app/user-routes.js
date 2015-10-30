@@ -11,7 +11,7 @@ var request = require("request");
 
 module.exports = function(app, passport, sockets) {
 
-    app.post('/upload-profile-pic', require("multer")({dest: './uploads/'
+    app.post('/upload-profile-pic', interceptor.track, require("multer")({dest: './uploads/'
     }).single('profilepic'), interceptor.isLoggedInAPI, function(req, res) {
         //console.log(req.file);
         var dirname = require('path').dirname(__dirname);
@@ -37,7 +37,7 @@ module.exports = function(app, passport, sockets) {
         res.redirect('/');
     });
 
-    app.get('/profile-pic', function(req, res) {
+    app.get('/profile-pic', interceptor.track, function(req, res) {
         var gfs = app.locals.gfs;
         var username = '';
 
@@ -75,7 +75,7 @@ module.exports = function(app, passport, sockets) {
         });
     });
 
-    app.get('/compose', interceptor.isLoggedIn, function(req, res) {
+    app.get('/compose', interceptor.track, interceptor.isLoggedIn, function(req, res) {
         if (!req.query.to) {
             req.query.to = [];
         } else {
@@ -128,14 +128,11 @@ module.exports = function(app, passport, sockets) {
         });
     });
 
-    app.get('/mailbox', interceptor.isLoggedIn, function(req, res) {
-
-
-
+    app.get('/mailbox', interceptor.isLoggedIn, interceptor.track, function(req, res) {
         res.render('mailbox');
     });
 
-    app.get('/users/:tab', interceptor.isLoggedIn, function(req, res) {
+    app.get('/users/:tab', interceptor.isLoggedIn, interceptor.track, function(req, res) {
         res.locals.tab = req.params.tab;
         User.find({}, function(err, users) {
             if (err || !users || users.length == 0) return res.render("500");
@@ -159,7 +156,7 @@ module.exports = function(app, passport, sockets) {
         });
     });
 
-    app.get('/users/:username/:tab', function(req, res) {
+    app.get('/users/:username/:tab', interceptor.track, function(req, res) {
         res.locals.tab = req.params.tab;
         var username = req.params.username;
         User.findOne({
@@ -189,7 +186,7 @@ module.exports = function(app, passport, sockets) {
         });
     });
 
-    app.get('/search', function(req, res) {
+    app.get('/search', interceptor.track, function(req, res) {
         var search = req.query.q;
         var tab = req.query.tab;
         if (!search) search = '';
@@ -286,12 +283,15 @@ module.exports = function(app, passport, sockets) {
         })
     });
 
-    app.get('/profile', function(req, res) {
+    app.get('/profile', interceptor.track, function(req, res) {
         if (!req.query.user && !req.isAuthenticated()) return res.render("500");
         var username = req.query.user || req.user.username;
         User.findOne({
             username: username
         }, function(err, user) {
+            if(err || !user){
+                return res.render("500");
+            }
             res.locals.profile = user;
             res.locals.auth = req.isAuthenticated();
             util.getVisibleCodes(req.user, user, function(codes) {
@@ -304,7 +304,7 @@ module.exports = function(app, passport, sockets) {
         })
     });
 
-    app.get('/friends', interceptor.isLoggedIn, function(req, res) {
+    app.get('/friends', interceptor.isLoggedIn, interceptor.track, function(req, res) {
         //console.log(req.user);
         User.findOne({
             _id: req.user._id
@@ -321,7 +321,7 @@ module.exports = function(app, passport, sockets) {
         });
     });
 
-    app.get('/mail', interceptor.isLoggedIn, function(req, res) {
+    app.get('/mail', interceptor.isLoggedIn, interceptor.track, function(req, res) {
         res.locals.folderView = req.query.f || 'inbox';
         res.locals.index = req.query.i || 0;
         var ret = [];
@@ -423,7 +423,7 @@ module.exports = function(app, passport, sockets) {
         }
     });
 
-    app.get('/follow', function(req, res) {        
+    app.get('/follow', interceptor.track, function(req, res) {        
         var end = function() {
             require("./redirect-handler.js")(req, res);
         }
@@ -474,7 +474,7 @@ module.exports = function(app, passport, sockets) {
         })
     });
 
-    app.get('/toggleContact', function(req, res) {
+    app.get('/toggleContact', interceptor.track, function(req, res) {
         var end = function() {
             require("./redirect-handler.js")(req, res);
         }
@@ -494,7 +494,7 @@ module.exports = function(app, passport, sockets) {
         });
     });
 
-    app.post("/updateUserSettings",interceptor.isLoggedIn,function(req,res){
+    app.post("/updateUserSettings", interceptor.track,interceptor.isLoggedIn,function(req,res){
         var error = {field:''}
         var msg = util.validateSignupFields(req.user.username,req.body.full_name,req.body.email,req.user.password,error);
         if(msg!='' && msg!=undefined){
