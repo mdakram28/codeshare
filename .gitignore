@@ -4,4 +4,4 @@ data/
 public/
 references/
 uploads/
-config/database.js
+/config/database.js

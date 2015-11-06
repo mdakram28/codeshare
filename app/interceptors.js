@@ -4,6 +4,7 @@ var User = require('./models/user.js');
 var Code = require('./models/code.js');
 var cloudinary = require("cloudinary");
 var tracker = require("./tracker.js");
+var pageview = require("./models/pageview.js")
 
 module.exports.allRequests = function (app, passport) {
     
@@ -50,7 +51,31 @@ module.exports.allRequests = function (app, passport) {
         res.locals.util = require("./util.js");
 
         req.isAdmin = req.isAuthenticated() && req.user.username == "mdakram28";
+        res.locals.isAdmin = req.isAdmin;
         next();
+    });
+    
+    app.use(function(req,res,next){
+        if(req.isAdmin){
+            pageview.find({},function(err,pages){
+                if(err || !pages){
+                    return res.render("500");
+                }
+                
+                var stats = {totalViews:0};
+                res.locals.stats = stats;
+                pages.forEach(function(page) {
+                    stats.totalViews += page.count;
+                });
+                pages.sort(function(a,b){
+                    return b.count - a.count;
+                });
+                stats.pages = pages;
+                next();
+            });
+        }else{
+            next();
+        }
     });
 
     app.use(function (req, res, next) {

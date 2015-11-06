@@ -23,6 +23,28 @@
       <input type="file" name="profilepic">
       <input type="submit" value="upload">
     </form>
+    <% if(isAdmin){ %>
+      <div class="row">
+        Views : <%- stats.totalViews %>
+        Pages : 
+        <table>
+          <tr>
+            <th>URL</th>
+            <th>Views</th>
+            <th>Method</th>
+            <th>Details</th>
+          </tr>
+          <% stats.pages.forEach(function(page){ %>
+            <tr>
+            <td><%= page.url %></td>
+            <td><%- page.count %></td>
+            <td><%= page.count %></td>
+            <td><%= page.method %></td>
+            </tr> 
+          <% }) %>
+        </table>
+      </div>
+    <% } %>
       <div class="row">
         <!-- <div class="col-md-3">
           <div style="display:block">
