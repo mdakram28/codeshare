@@ -19,30 +19,77 @@
     </section>
 
     <section class="content">
-    <form action="/upload-profile-pic" method="post" enctype="multipart/form-data">
+    <!-- <form action="/upload-profile-pic" method="post" enctype="multipart/form-data">
       <input type="file" name="profilepic">
       <input type="submit" value="upload">
-    </form>
+    </form> -->
     <% if(isAdmin){ %>
       <div class="row">
-        Views : <%- stats.totalViews %>
-        Pages : 
-        <table>
-          <tr>
-            <th>URL</th>
-            <th>Views</th>
-            <th>Method</th>
-            <th>Details</th>
-          </tr>
-          <% stats.pages.forEach(function(page){ %>
-            <tr>
-            <td><%= page.url %></td>
-            <td><%- page.count %></td>
-            <td><%= page.count %></td>
-            <td><%= page.method %></td>
-            </tr> 
-          <% }) %>
-        </table>
+        <div class="col-md-6">
+          <div class="box box-solid">
+            <div class="box-header with-border">
+              <h3 class="box-title">Page Views</h3>
+
+              <div class="box-tools">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="box-body">
+              Views : <%- stats.totalViews %>
+              Pages : 
+              <table class="table table-hover">
+                <tbody>
+                  <tr>
+                    <th>URL</th>
+                    <th>Views</th>
+                    <th>Method</th>
+                    <th>Details</th>
+                  </tr>
+                  <% stats.pages.forEach(function(page){ %>
+                    <tr>
+                    <td><%= page.url %></td>
+                    <td><%- page.count %></td>
+                    <td><%= JSON.stringify(page.details) %></td>
+                    <td><%= page.method %></td>
+                    </tr> 
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="box box-solid">
+            <div class="box-header with-border">
+              <h3 class="box-title">All Users</h3>
+
+              <div class="box-tools">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="box-body">
+              <table class="table table-hover">
+                <tbody>
+                  <tr>
+                    <th>Username</th>
+                    <th>Full name</th>
+                    <th>reg. no</th>
+                  </tr>
+                  <% allUsers.forEach(function(us){ %>
+                    <tr>
+                      <td><%= us.username %></td>
+                      <td><%= us.full_name %></td>
+                      <td><%= us.regno %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     <% } %>
       <div class="row">

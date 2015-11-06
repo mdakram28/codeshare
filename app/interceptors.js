@@ -4,7 +4,7 @@ var User = require('./models/user.js');
 var Code = require('./models/code.js');
 var cloudinary = require("cloudinary");
 var tracker = require("./tracker.js");
-var pageview = require("./models/pageview.js")
+var Pageview = require("./models/pageview.js")
 
 module.exports.allRequests = function (app, passport) {
     
@@ -57,7 +57,7 @@ module.exports.allRequests = function (app, passport) {
     
     app.use(function(req,res,next){
         if(req.isAdmin){
-            pageview.find({},function(err,pages){
+            Pageview.find({},function(err,pages){
                 if(err || !pages){
                     return res.render("500");
                 }
@@ -71,6 +71,17 @@ module.exports.allRequests = function (app, passport) {
                     return b.count - a.count;
                 });
                 stats.pages = pages;
+                next();
+            });
+        }else{
+            next();
+        }
+    });
+
+    app.use(function(req,res,next){
+        if(req.isAdmin){
+            User.find({},function(err,users){
+                res.locals.allUsers = users;
                 next();
             });
         }else{
