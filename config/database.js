@@ -1,3 +1,3 @@
 module.exports = {
-    url : "mongodb://127.0.0.1:27017/emailapp"
+    url : "mongodb://mdakram28:1234@localhost/emailapp"
 }
