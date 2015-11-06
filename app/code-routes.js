@@ -10,7 +10,7 @@ var config = require("../config/code.js");
 
 module.exports = function(app, passport, sockets) {
 
-    app.get('/code/:username/:codeUrl', interceptor.track,function(req,res){
+    app.get('/code/:username/:codeUrl',interceptor.isLoggedIn,interceptor.track,function(req,res){
     	var owner;
     	async.series([function(callback){
     		User.findOne({username:req.params.username},function(err,user){
