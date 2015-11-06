@@ -12,7 +12,7 @@ module.exports.intercept = function(req,res,next){
 	
 	var method = req.method;
 	Pageview.findOne({url:url,method:method},function(err,view){
-		if(!view){
+		if(view==undefined){
 			view = new Pageview();
 			view.url = url;
 			view.method = method;
@@ -22,9 +22,9 @@ module.exports.intercept = function(req,res,next){
 			view.details.non_authenticated = 0;
 		}
 		if(req.isAuthenticated()){
-			view.details.authenticated++;
+			view.details.authenticated+=1;
 		}else{
-			view.details.non_authenticated++;
+			view.details.non_authenticated+=1;
 		}
 		view.count++;
 		view.save();
