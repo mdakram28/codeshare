@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+<%- include('components/header',{title:'CODEBook - Create new code',includes:['selectize']}) %>
+<style>
+  #editor{
+    width: 100%;
+    min-height: 200px;
+  }
+  .slot{
+    padding: 0px !important;
+    cursor: pointer;
+    width: 100%;
+    display: block;
+  }
+  #slots-select td, #slots-select th{
+    padding: 0px;
+  }
+  #slots-select input[type="checkbox"]{
+    margin-top: 0px;
+    height: 20px;
+    width: 20px;
+  }
+  .slot.selected:not(.disabled){
+    background-color: #86F388 !important;
+  }
+  .slot.disabled{
+    background-color: red !important;
+    cursor: not-allowed !important;
+  }
+
+  #timetable th , #timetable td{
+    text-align: center;
+    border: 1px solid #000000;
+  }
+  #timetable tr:nth-child(1) > th{
+    background-color: #605ca8;
+  }
+  #timetable tr:nth-child(1) > th:not(#timetable tr:nth-child(1) > th:nth-child(1)){
+  }
+
+  #timetable tr > th:nth-child(1){
+    background-color: #605ca8;
+  }
+</style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini" ng-app="mailApp" ng-controller="mailController" ng-cloak>
+<div class="wrapper">
+  <%- include('components/navbar') %>
+  
+  <%- include('components/sidebar',{active:'code',active_sub:'new-code'}) %>
+  
+  <div class="content-wrapper">
+    <section class="content-header">
+    </section>
+
+    <section class="content">
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">Courses</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+              <div id="scan-progress" class="progress progress-xs">
+                <div class="active progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                  <span class="sr-only">60% Complete (warning)</span>
+                </div>
+              </div>
+
+              <div class="row">
+                <% courses.forEach(function(course,cInd){ %>
+                <div class="col-md-3">
+                  <div class="box box-default">
+                    <div class="box-header with-border">
+                      <h3 class="box-title"><%= course.id %></h3>
+                      <div class="box-tools pull-right">
+                      </div><!-- /.box-tools -->
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                      <table id="slots-select" class="table table-bordered">
+                        <tbody>
+                          <tr>
+                            <th>SLOT <button type="button" ng-click="selectAll(<%- cInd %>)" class="btn btn-xs btn-primary"><span ng-hide="courses[<%- cInd %>].selected">Select all</span><span ng-show="courses[<%- cInd %>].selected">Deselect all</span></button></th>
+                            <th><input type="checkbox" ng-model="courses[<%- cInd %>].locked" ng-click="lockAll(<%- cInd %>)" /></th>
+                          </tr>
+                        <% course.slots.forEach(function(slot,sInd){ %>
+                        <tr>
+                          <td>
+                            <a ng-class="{true:'slot selected', false:'slot'}[courses[<%- cInd %>].slots[<%- sInd %>].selected]+{true:' disabled', false:''}[courses[<%- cInd %>].slots[<%- sInd %>].disabled]" ng-click="selectSlot(<%- cInd %>,<%- sInd %>)">
+                            <%= slot.slots %>
+                            </a>
+                          </td>
+                          <td>
+                            <input type="checkbox" ng-model="courses[<%- cInd %>].slots[<%- sInd %>].locked" />
+                          </td>
+                        </tr>
+                        <% }) %>
+                        </tbody>
+                      </table>
+                    </div><!-- /.box-body -->
+                  </div><!-- /.box -->
+                </div>
+                <% if((cInd+1)%4==0){ %>
+              </div>
+              <div class="row">
+                <% }}) %>
+              </div>
+            </div><!-- /.box-body -->
+            <div class="overlay hidden" id="refreshing-icon">
+              <i class="fa fa-refresh fa-spin" style="margin-top:15px;top:0px"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">Time Table</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+              <table id="timetable" class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <th><b>TIME</b></th>
+                    <th><b>8:00 - 8:50</b></th>
+                    <th><b>9:00 - 9:50</b></th>
+                    <th><b>10:00 - 10:50</b></th>
+                    <th><b>11:00 - 11:50</b></th>
+                    <th><b>11:50 - 12:40</b></th>
+                    <th><b>12:40 - 1:30</b></th>
+                    <th><b><h4> <h4></b></th>
+                    <th><b>2:00 - 2:50</b></th>
+                    <th><b>3:00 - 3:50</b></th>
+                    <th><b>4:00 - 4:50</b></th>
+                    <th><b>5:00 - 5:50</b></th>
+                    <th><b>5:50 - 6:40</b></th>
+                    <th><b>6:40 - 7:30</b></th>
+                  </tr>
+                  <tr>
+                    <th><b>MON</b></th>
+                    <td>A1/L1</td>
+                    <td>F1/L2</td>
+                    <td>C1/L3</td>
+                    <td>E1/L4</td>
+                    <td>TD1/L5</td>
+                    <td>L6</td>
+                    <th><b><h4>L<h4></b></th>
+                    <td>A2/L31</td>
+                    <td>F2/L32</td>
+                    <td>C2/L33</td>
+                    <td>E2/L34</td>
+                    <td>TD2/L35</td>
+                    <td>L36</td>
+                  </tr>
+                  <tr>
+                    <th><b>TUE</b></th>
+                    <td>B1/L7</td>
+                    <td>G1/L8</td>
+                    <td>D1/L9</td>
+                    <td>TA1/L10</td>
+                    <td>TF1/L11</td>
+                    <td>L12</td>
+                    <th><b><h4>U<h4></b></th>
+                    <td>B2/L47</td>
+                    <td>G2/L48</td>
+                    <td>D2/L49</td>
+                    <td>TA2/L40</td>
+                    <td>TF2/L41</td>
+                    <td>L42</td>
+                  </tr>
+                  <tr>
+                    <th><b>WED</b></th>
+                    <td>C1/L13</td>
+                    <td>F1/L14</td>
+                    <td>E1/L15</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <th><b><h4>N<h4></b></th>
+                    <td>C2/L43</td>
+                    <td>F2/L44</td>
+                    <td>E2/L45</td>
+                    <td>TB2/L46</td>
+                    <td>TG2/L47</td>
+                    <td>L48</td>
+                  </tr>
+                  <tr>
+                    <th><b>THU</b></th>
+                    <td>D1/L19</td>
+                    <td>A1/L20</td>
+                    <td>F1/L21</td>
+                    <td>C1/L22</td>
+                    <td>TE1/L23</td>
+                    <td>L24</td>
+                    <th><b><h4>C<h4></b></th>
+                    <td>D2/L49</td>
+                    <td>A2/L50</td>
+                    <td>F2/L51</td>
+                    <td>C2/L52</td>
+                    <td>TE2/L53</td>
+                    <td>L54</td>
+                  </tr>
+                  <tr>
+                    <th><b>FRI</b></th>
+                    <td>E1/L25</td>
+                    <td>B1/L26</td>
+                    <td>G1/L27</td>
+                    <td>D1/L28</td>
+                    <td>TC1/L29</td>
+                    <td>L30</td>
+                    <th><b><h4>H<h4></b></th>
+                    <td>E2/L55</td>
+                    <td>B2/L56</td>
+                    <td>G2/L57</td>
+                    <td>D2/L58</td>
+                    <td>TC2/L59</td>
+                    <td>L60</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div><!-- /.box-body -->
+          </div>
+        </div>
+      </div>
+    </section>
+    
+  </div>
+  
+  <%- include('components/footer') %>
+
+  
+  
+</div>
+
+
+  <%- include('components/footer-scripts',{includes:['slimscroll','fastclick','app','demo','script-mails','ace','selectize','script-codes']}) %>
+  <script>
+    var courses = <%- JSON.stringify(courses) %>;
+    var total = 0;
+    var scanned = 0;
+    var prev_prog = 0;
+    function setProgress(){
+      var prog = Math.floor(scanned*100/total);
+      if(prog==prev_prog)return;
+      prev_prog = prog;
+      console.log(prog);
+      if(prog==100){
+
+      }
+      $("#scan-progress .progress-bar").css("width",prog+"%");
+    }
+    function clash(ind,cl){
+      var len = cl.slotNums.length;
+      for (var i = 0; i < len; i++) {
+        var sn = cl.slotNums[i];
+        for (var j = 0; j < ind; j++) {
+          if(slots[j].slotNums.indexOf(sn)>=0)return true;
+        };
+      };
+      return false;
+    }
+
+    var slots=[];
+    for (var i = 0; i < courses.length; i++) {
+      slots[i] = undefined;
+    };
+
+    function isAccessible(cInd,sInd){
+      console.log(cInd+" : "+sInd);
+      function iterate(i){
+        if(i==courses.length){
+          return true;
+        }
+        for (var sl = 0; sl < courses[i].slots.length; sl++) {
+          // console.log(i==cInd && sl!=sInd);
+          // console.log(courses[i].slots[sl].locked);
+          // console.log(!courses[i].slots[sl].selected);
+          if((i==cInd && sl!=sInd) || courses[i].slots[sl].disabled || (!courses[i].slots[sl].selected && courses[i].slots[sl].locked)){
+            //console.log("skipping : "+i+" "+sl);
+            continue;
+          }
+          //console.log("checking : "+courses[i].slots[sl]);
+          if(clash(i,courses[i].slots[sl]))continue;
+          slots[i] = courses[i].slots[sl];
+          if(iterate(i+1)==true)return true;
+        };
+        //console.log(slots);
+        //console.log(i);
+        return false;
+      }
+      return iterate(0);
+    };
+  app.controller('mailController2',function($scope,$http){
+    $scope.courses = courses;
+      courses.forEach(function(course,cInd){
+        course.selected = true;
+        course.slots.forEach(function(slot,sInd){
+          slot.selected = true;
+        });
+      });
+      courses.forEach(function(course,cInd){
+        course.slots.forEach(function(slot,sInd){
+          slot.disabled = !isAccessible(cInd,sInd);
+          total++;
+        });
+      });
+    $scope.selectSlot = function(ci,si){
+      if(courses[ci].slots[si].disabled)return;
+      courses[ci].slots[si].selected = !courses[ci].slots[si].selected;
+      $scope.refreshSlots(ci,si);
+    }
+    $scope.refreshSlots = function(ci,si){
+      scanned = 0;
+      setProgress();
+      $("#refreshing-icon").css()
+      courses.forEach(function(course,cInd){
+        course.slots.forEach(function(slot,sInd){
+          setTimeout(function(){
+            if((ci==cInd && si==sInd) || slot.locked){
+            }else{
+              slot.selected = isAccessible(cInd,sInd);
+            }
+          },5)
+          scanned++;
+          setProgress();
+        });
+      });
+    };
+    $scope.lockAll = function(ci){
+      courses[ci].slots.forEach(function(slot){
+        slot.locked = courses[ci].locked;
+      });
+    };
+    $scope.selectAll = function(ci){
+      courses[ci].selected = !courses[ci].selected;
+      courses[ci].slots.forEach(function(slot){
+        slot.selected = courses[ci].selected;
+      })
+    }
+  });
+  </script>
+</body>
+</html>

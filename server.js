@@ -55,6 +55,7 @@ require('./app/routes.js')(app, passport, socketHandler);
 require("./app/user-routes.js")(app, passport, socketHandler);
 require("./app/api-routes.js")(app, passport, socketHandler);
 require("./app/code-routes.js")(app, passport, socketHandler);
+require("./app/timetable-routes.js")(app, passport, socketHandler);
 
 // launch ======================================================================
 server.listen(port);

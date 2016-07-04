@@ -366,8 +366,7 @@ module.exports = function (app, passport, sockets) {
             }
         });
     });
-
-    app.get('/api/isActive', interceptor.track, function (req, res) {
+     app.get('/api/isActive', interceptor.track, function (req, res) {
         if (req.isAuthenticated()) {
             res.json({
                 success: true

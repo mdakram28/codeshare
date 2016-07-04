@@ -46,6 +46,22 @@
             </li>
           </ul>
         </li>
+
+        <li class="treeview <%= active=='timeTable'?'active':'' %>">
+          <a href="#">
+            <i class="fa fa-circle"></i>
+            <span>Time Table</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li <%= active_sub=='new-code'?'class=active':'' %>>
+              <a href="/timetable/courses"><i class="fa fa-circle-o"></i>My Courses</a>
+            </li>
+            <li <%= active_sub=='my-codes'?'class=active':'' %>>
+              <a href="/timetable/make"><i class="fa fa-circle-o"></i>Make Time Table</a>
+            </li>
+          </ul>
+        </li>
         
         <li class="treeview <%= active=='mailbox'?'active':'' %>">
           <a href="#">
